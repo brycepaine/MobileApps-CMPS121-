@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<ImageModel> data = new ArrayList<>();
 
+    //we need to change this to download images uploaded by users
     public static String IMGS[] = {
            "https://images.unsplash.com/photo-1444090542259-0af8fa96557e?q=80&fm=jpg&w=1080&fit=max&s=4b703b77b42e067f949d14581f35019b",
             "https://images.unsplash.com/photo-1439546743462-802cabef8e97?dpr=2&fit=crop&fm=jpg&h=725&q=50&w=1300",
@@ -88,22 +89,12 @@ public class MainActivity extends AppCompatActivity {
         Log.i(LOG_TAG, "useremail: " + user_email);
         if (user_email == null) {
             Log.i(LOG_TAG,"switching to login intent");
-//            // Creates a random one, and sets it.
-//            SecureRandomString srs = new SecureRandomString();
-//            user_id = srs.nextString();
-//            SharedPreferences.Editor e = settings.edit();
-//            e.putString("user_id", user_id);
-//            e.commit();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
 
         requestLocationUpdate();
-
         spinner = (ProgressBar)findViewById(R.id.progressBar1);
-
-
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -119,24 +110,18 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < IMGS.length; i++) {
             //if image is within proximity to user's location, then display it here
-
             ImageModel imageModel = new ImageModel();
-
             imageModel.setName("Image " + i);
             imageModel.setUrl(IMGS[i]);
             //set ListComments
             //set voteCount
-
             data.add(imageModel);
-
         }
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
-
-
         mAdapter = new GalleryAdapter(MainActivity.this, data);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -153,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 }));
-
     }
 
     @Override
@@ -185,10 +169,7 @@ public class MainActivity extends AppCompatActivity {
             e.commit();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
-
-
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -223,25 +204,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void uploadImage(Bitmap b) {
-        String uploadImage = getStringImage(b);
 
 
-
-    }
-
-    private static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
-                                   boolean filter) {
-        float ratio = Math.min(
-                (float) maxImageSize / realImage.getWidth(),
-                (float) maxImageSize / realImage.getHeight());
-        int width = Math.round((float) ratio * realImage.getWidth());
-        int height = Math.round((float) ratio * realImage.getHeight());
-
-        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
-                height, filter);
-        return newBitmap;
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -249,33 +213,9 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode==PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data!= null){
             imageUri = data.getData();
             Log.i(LOG_TAG, "imageURI: " + imageUri);
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                Bitmap scaledBitmap = scaleDown(bitmap, 600, true );
-                Log.i(LOG_TAG, "imagebitmap " + bitmap);
-//failed binder
-//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//                byte[] bytes = stream.toByteArray();
-                if (Global.img != null){
-                    Global.img.clear();
-                }
-                Global.img = new WeakReference<Bitmap>(scaledBitmap);
-
-
-
-
-                Intent intent = new Intent(this, PreviewActivity.class);
-
-                startActivity(intent);
-
-//                uploadImagestr = getStringImage(bitmap);
-//                Log.i(LOG_TAG, "uploadimagestr" + uploadImagestr);
-//                uploadImage(bitmap);
-               //upload the image here
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Intent i = new Intent(this, PreviewActivity.class);
+            i.putExtra("imageUri", imageUri.toString());
+            startActivity(i);
         }
         if(requestCode==TAKE_PIC_REQUEST &&resultCode==RESULT_OK&&data!=null){
             imageUri = data.getData();
