@@ -37,6 +37,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.grafixartist.gallery.response.ImageResult;
 import com.grafixartist.gallery.response.ImageURLResponse;
 
 import java.io.ByteArrayOutputStream;
@@ -58,6 +59,7 @@ import retrofit2.http.Query;
 public class MainActivity extends AppCompatActivity {
 
     GalleryAdapter mAdapter;
+
     RecyclerView mRecyclerView;
     public static Bitmap BitmapPreview;
     private String lng;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String user_name;
+
 
     public static String LOG_TAG = "MyApplication";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
@@ -166,11 +169,11 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     private void getImageURLs(){
-        if (IMGS.size() > 0 ) IMGS.clear();
-        IMGS.add("http://imagegallery.netai.net/pictures/test.JPG");
-        IMGS.add("http://imagegallery.netai.net/pictures/49br4m9rn3bq1brnve9g2hb6jh.JPG");
-        IMGS.add("http://imagegallery.netai.net/pictures/5okj385j9gt4334lq088ucuogi.JPG");
-        IMGS.add("http://imagegallery.netai.net/pictures/Bryce.JPG");
+//        if (IMGS.size() > 0 ) IMGS.clear();
+//        IMGS.add("http://imagegallery.netai.net/pictures/test.JPG");
+//        IMGS.add("http://imagegallery.netai.net/pictures/49br4m9rn3bq1brnve9g2hb6jh.JPG");
+//        IMGS.add("http://imagegallery.netai.net/pictures/5okj385j9gt4334lq088ucuogi.JPG");
+//        IMGS.add("http://imagegallery.netai.net/pictures/Bryce.JPG");
 
 
 
@@ -196,8 +199,53 @@ public class MainActivity extends AppCompatActivity {
         queryResponseCall.enqueue(new Callback<ImageURLResponse>() {
             @Override
             public void onResponse(Response<ImageURLResponse> response) {
+                if(response.code() == 500){
+                    Log.e(LOG_TAG, "Error, please try again");
+                }
+                ArrayList<ImageResult> imageInfo = new ArrayList<ImageResult>(response.body().getImageResult());
+                for (int i = 0; i < imageInfo.size(); i++) {
+                    ImageResult res = imageInfo.get(i);
+                    //if image is within proximity to user's location, then display it here
+                    ImageModel imageModel = new ImageModel();
+                    imageModel.setUserName(res.getUserName());
+                    imageModel.setUrl("http://imagegallery.netai.net/pictures/" + res.getImageId() + ".JPG");
+                    imageModel.setDescription(res.getDescription());
+
+                    Log.i(LOG_TAG, "image info list at :" + res + " username: " + res.getUserName()
+                        + " URL : " + imageModel.getUrl() + "  description  " + res.getDescription());
+                    //imageModel.setTimestamp(res.getTimestamp());
+                            //set ListComments
+                            //set voteCount
+                    data.add(imageModel);
+
+                    Log.i(LOG_TAG, "the data is " + data);
+
+
+                }
+
+
                 Log.i(LOG_TAG, "Code is: " + response.code());
+                Log.i(LOG_TAG, "response " + response.body().getImageResult());
             }
+
+//            public void onResponse(Response<Result> response) {
+//                if(response.code() == 500) {
+//                    Log.e(LOG_TAG, "Error, please try again.");
+//                } else {
+//                    aList.clear();
+//                    ArrayList<Message> messages = new ArrayList<Message>(response.body().response.messages);
+//                    for (int i = messages.size()-1; i >= 0; i--) {
+//                        Message msg = messages.get(i);
+//                        ListElement node = new ListElement(msg.timestamp, msg.message, msg.nickname, msg.user_id, msg.message_id);
+//                        aList.add(node);
+//                    }
+//                    if (aList.size() == 0)
+//                        ((TextView) findViewById(R.id.noResult)).setVisibility(View.VISIBLE);
+//                    aa.notifyDataSetChanged();
+//                }
+//            }
+
+
 
             @Override
             public void onFailure(Throwable t) {
@@ -205,6 +253,26 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "throwable t: " + t);
             }
         });
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setHasFixedSize(true);
+        mAdapter = new GalleryAdapter(MainActivity.this, data);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
+                new RecyclerItemClickListener.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(View view, int position) {
+
+                        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                        intent.putParcelableArrayListExtra("data", data);
+                        intent.putExtra("pos", position);
+                        startActivity(intent);
+
+                    }
+                }));
 
     }
     /**
@@ -222,6 +290,8 @@ public class MainActivity extends AppCompatActivity {
         getImageURLs();
 
 
+
+
         if (spinner != null && spinner.getVisibility() == View.VISIBLE){
             removeLocationUpdate();
             spinner.setVisibility(View.GONE);
@@ -232,15 +302,7 @@ public class MainActivity extends AppCompatActivity {
 
         //first get all images
 
-        for (int i = 0; i < IMGS.size(); i++) {
-            //if image is within proximity to user's location, then display it here
-            ImageModel imageModel = new ImageModel();
-            imageModel.setName("Image " + i);
-            imageModel.setUrl(IMGS.get(i));
-            //set ListComments
-            //set voteCount
-            data.add(imageModel);
-        }
+
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);

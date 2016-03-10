@@ -51,7 +51,7 @@ public class DetailActivity extends AppCompatActivity {
         data = getIntent().getParcelableArrayListExtra("data");
         pos = getIntent().getIntExtra("pos", 0);
 
-        setTitle(data.get(pos).getName());
+        setTitle(data.get(pos).getUserName());
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -73,7 +73,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
 
                 //noinspection ConstantConditions
-                setTitle(data.get(position).getName());
+                setTitle(data.get(position).getUserName());
 
             }
 
@@ -126,7 +126,7 @@ public class DetailActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position, data.get(position).getName(), data.get(position).getUrl());
+            return PlaceholderFragment.newInstance(position, data.get(position).getUserName(), data.get(position).getUrl());
         }
 
         @Override
@@ -137,7 +137,7 @@ public class DetailActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return data.get(position).getName();
+            return data.get(position).getUserName();
         }
     }
 
