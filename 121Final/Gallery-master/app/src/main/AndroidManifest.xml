@@ -33,6 +33,7 @@
         <activity android:name="com.grafixartist.gallery.LoginActivity" android:theme="@style/AppTheme.Dark" />
         <activity android:name="com.grafixartist.gallery.SignupActivity" android:theme="@style/AppTheme.Dark" />
         <activity android:name=".PreviewActivity" android:theme="@style/AppTheme.Dark"/>
+        <activity android:name=".CommentActivity"/>
     </application>
 
 </manifest>

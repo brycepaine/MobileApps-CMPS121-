@@ -2,10 +2,13 @@ package com.grafixartist.gallery;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Button;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -16,55 +19,63 @@ import java.util.List;
 /**
  * Created by Suleiman19 on 10/22/15.
  */
-public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomViewHolder> {
+    private static String LOG_TAG = "MyApplication";
 
-    Context context;
-    List<ImageModel> data = new ArrayList<>();
+    private Context mContext;
+    private List<ImageModel> dataList;
 
-    public GalleryAdapter(Context context, List<ImageModel> data) {
-        this.context = context;
-        this.data = data;
+    public GalleryAdapter(Context context, List<ImageModel> dataList) {
+        this.mContext = context;
+        this.dataList = dataList;
     }
 
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder viewHolder;
-        View v;
-            v = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.list_item, parent, false);
-            viewHolder = new MyItemHolder(v);
+    public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
 
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, null);
+
+        CustomViewHolder viewHolder = new CustomViewHolder(view);
         return viewHolder;
+
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
 
-            Glide.with(context).load(data.get(position).getUrl())
+            ImageModel feedItem = dataList.get(i);
 
-
+            Glide.with(mContext).load(feedItem.getUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(((MyItemHolder) holder).mImg);
+                    .into(customViewHolder.imageView);
+
+            customViewHolder.textView.setText(feedItem.getUserName());
+
+            Log.i(LOG_TAG, "getuser name " + feedItem.getUserName());
+
+            customViewHolder.buttonView.setText(feedItem.getDescription());
 
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return (null != dataList ? dataList.size() : 0);
     }
 
-    public static class MyItemHolder extends RecyclerView.ViewHolder {
-        ImageView mImg;
+    public class CustomViewHolder extends RecyclerView.ViewHolder {
 
+        protected ImageView imageView;
+        protected TextView textView;
+        protected Button buttonView;
 
-        public MyItemHolder(View itemView) {
-            super(itemView);
+        public CustomViewHolder(View view) {
+            super(view);
 
-            mImg = (ImageView) itemView.findViewById(R.id.item_img);
+            this.imageView = (ImageView) view.findViewById(R.id.item_img);
+            this.textView = (TextView) view.findViewById(R.id.username);
+            this.buttonView = (Button) view.findViewById(R.id.btn);
         }
-
     }
-
 
 }

@@ -57,48 +57,54 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public class MainActivity extends AppCompatActivity {
+    private static String LOG_TAG = "MyApplication";
 
-    GalleryAdapter mAdapter;
-
-    RecyclerView mRecyclerView;
-    public static Bitmap BitmapPreview;
-    private String lng;
-    private String lat;
-
-
-    private String user_name;
-
-
-    public static String LOG_TAG = "MyApplication";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int TAKE_PIC_REQUEST = 100;
-    private LocationData locationData = LocationData.getLocationData();//store location to share between activities
-    private Bitmap bitmap;
+
+    private ArrayList<ImageModel> mydata = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private GalleryAdapter adapter;
+    private ProgressBar progressBar;
+
+
+    private LocationData locationData;
+    private String lng;
+    private String lat;
+    private String user_name;
+
+
     private Uri imageUri;
     private String uploadImagestr;
+
     private SharedPreferences settings;
-
-    private ProgressBar spinner;
-
-    ArrayList<ImageModel> data = new ArrayList<>();
-
-    //we need to change this to download images uploaded by users
-    public List<String> IMGS = new ArrayList<String>();
-//    public static String IMGS[] = {"http://imagegallery.netai.net/pictures/test.JPG"};
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "on create");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+
+    @Override
+    protected void onResume(){
+        Log.i(LOG_TAG, "on resume");
+
+        locationData = LocationData.getLocationData();
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
-        user_name = settings.getString("user_name", null);
         lat = settings.getString("lat", null);
         lng = settings.getString("lng", null);
+        user_name = settings.getString("user_name", null);
 
-        spinner = (ProgressBar) findViewById(R.id.progressBar1);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Log.i(LOG_TAG, "on create user name: " + user_name + " lat: " + lat + lng);
         if (user_name == null) {
@@ -114,35 +120,14 @@ public class MainActivity extends AppCompatActivity {
         else {
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
+            getImageURLs();
         }
 
-    }
-
-
-    @Override
-    protected void onResume(){
-        settings = PreferenceManager.getDefaultSharedPreferences(this);
-        user_name = settings.getString("user_name", null);
-
-        if (user_name == null) {
-            Log.i(LOG_TAG,"switching to login intent");
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
-        else if (settings.getString("lat", null) == null){
-            requestLocationUpdate();
-            spinner = (ProgressBar) findViewById(R.id.progressBar1);
-
-        }
-        else {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            getImages();
-        }
         super.onResume();
 
     }
     protected void onPause(){
+        Log.i(LOG_TAG, "on pause");
         if(lat != null && lng != null) {
             settings = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor e = settings.edit();
@@ -150,31 +135,41 @@ public class MainActivity extends AppCompatActivity {
             e.putString("lng", lng);
             e.commit();
         }
-        IMGS.clear();
+//        mydata.clear();
+
         Log.i(LOG_TAG, "onPause lat lng: " + lat + lng);
         super.onPause();
     }
 
-    //for testing lat lng
-//    private void removeData(){
-//        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-//        SharedPreferences.Editor e = p.edit();
-//        e.remove("lat");
-//        e.remove("lng");
-//        e.commit();
-//        lat = null;
-//        lng = null;
-//        Log.i(LOG_TAG, "remove data " + p.getString("lat", null));
+
+
+    private void loadImages(){
+        Log.i(LOG_TAG, "load images");
+
+//        mRecyclerView.setHasFixedSize(true);
+        progressBar.setVisibility(View.GONE);
+
+        adapter = new GalleryAdapter(MainActivity.this, mydata);
+        mRecyclerView.setAdapter(adapter);
+
+//        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
+//                new RecyclerItemClickListener.OnItemClickListener() {
 //
-//    }
+//                    @Override
+//                    public void onItemClick(View view, int position) {
+//                        Log.i(LOG_TAG, "mydata: " + mydata + " position: " + position);
+//                        String imageToPass = mydata.get(position).getImageID();
+//                        Intent intent = new Intent(MainActivity.this, CommentActivity.class);
+//                        intent.putExtra("image_id", imageToPass);
+//                        startActivity(intent);
+//
+//                    }
+//                }));
+    }
 
     private void getImageURLs(){
-//        if (IMGS.size() > 0 ) IMGS.clear();
-//        IMGS.add("http://imagegallery.netai.net/pictures/test.JPG");
-//        IMGS.add("http://imagegallery.netai.net/pictures/49br4m9rn3bq1brnve9g2hb6jh.JPG");
-//        IMGS.add("http://imagegallery.netai.net/pictures/5okj385j9gt4334lq088ucuogi.JPG");
-//        IMGS.add("http://imagegallery.netai.net/pictures/Bryce.JPG");
-
+        Log.i(LOG_TAG, "get image urls");
+        setProgressBarIndeterminateVisibility(true);
 
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -199,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         queryResponseCall.enqueue(new Callback<ImageURLResponse>() {
             @Override
             public void onResponse(Response<ImageURLResponse> response) {
-                if(response.code() == 500){
+                if (response.code() == 500) {
                     Log.e(LOG_TAG, "Error, please try again");
                 }
                 ArrayList<ImageResult> imageInfo = new ArrayList<ImageResult>(response.body().getImageResult());
@@ -210,41 +205,21 @@ public class MainActivity extends AppCompatActivity {
                     imageModel.setUserName(res.getUserName());
                     imageModel.setUrl("http://imagegallery.netai.net/pictures/" + res.getImageId() + ".JPG");
                     imageModel.setDescription(res.getDescription());
+                    imageModel.setImageID(res.getImageId());
 
                     Log.i(LOG_TAG, "image info list at :" + res + " username: " + res.getUserName()
-                        + " URL : " + imageModel.getUrl() + "  description  " + res.getDescription());
-                    //imageModel.setTimestamp(res.getTimestamp());
-                            //set ListComments
-                            //set voteCount
-                    data.add(imageModel);
+                            + " URL : " + imageModel.getUrl() + "  description  " + res.getDescription());
 
-                    Log.i(LOG_TAG, "the data is " + data);
+                    mydata.add(imageModel);
 
-
+                    Log.i(LOG_TAG, "the data is " + mydata);
                 }
+                loadImages();
 
 
                 Log.i(LOG_TAG, "Code is: " + response.code());
                 Log.i(LOG_TAG, "response " + response.body().getImageResult());
             }
-
-//            public void onResponse(Response<Result> response) {
-//                if(response.code() == 500) {
-//                    Log.e(LOG_TAG, "Error, please try again.");
-//                } else {
-//                    aList.clear();
-//                    ArrayList<Message> messages = new ArrayList<Message>(response.body().response.messages);
-//                    for (int i = messages.size()-1; i >= 0; i--) {
-//                        Message msg = messages.get(i);
-//                        ListElement node = new ListElement(msg.timestamp, msg.message, msg.nickname, msg.user_id, msg.message_id);
-//                        aList.add(node);
-//                    }
-//                    if (aList.size() == 0)
-//                        ((TextView) findViewById(R.id.noResult)).setVisibility(View.VISIBLE);
-//                    aa.notifyDataSetChanged();
-//                }
-//            }
-
 
 
             @Override
@@ -254,25 +229,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setHasFixedSize(true);
-        mAdapter = new GalleryAdapter(MainActivity.this, data);
-        mRecyclerView.setAdapter(mAdapter);
 
-        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
-                new RecyclerItemClickListener.OnItemClickListener() {
-
-                    @Override
-                    public void onItemClick(View view, int position) {
-
-                        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                        intent.putParcelableArrayListExtra("data", data);
-                        intent.putExtra("pos", position);
-                        startActivity(intent);
-
-                    }
-                }));
 
     }
     /**
@@ -284,47 +241,7 @@ public class MainActivity extends AppCompatActivity {
                                       @Query("lng") String lng);
     }
 
-    private void getImages(){
-        Log.i(LOG_TAG, "get images spnner null?" + Boolean.toString(spinner == null));
 
-        getImageURLs();
-
-
-
-
-        if (spinner != null && spinner.getVisibility() == View.VISIBLE){
-            removeLocationUpdate();
-            spinner.setVisibility(View.GONE);
-        }
-
-        //call retrofit to get images
-
-
-        //first get all images
-
-
-
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setHasFixedSize(true);
-        mAdapter = new GalleryAdapter(MainActivity.this, data);
-        mRecyclerView.setAdapter(mAdapter);
-
-        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
-                new RecyclerItemClickListener.OnItemClickListener() {
-
-                    @Override
-                    public void onItemClick(View view, int position) {
-
-                        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                        intent.putParcelableArrayListExtra("data", data);
-                        intent.putExtra("pos", position);
-                        startActivity(intent);
-
-                    }
-                }));
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -408,22 +325,10 @@ public class MainActivity extends AppCompatActivity {
         }
         if(requestCode==TAKE_PIC_REQUEST &&resultCode==RESULT_OK&&data!=null){
             imageUri = data.getData();
-            bitmap = (Bitmap) data.getExtras().get("data");
-
-            // Cursor to get image uri to display
-
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(imageUri,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
-
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            uploadImagestr = getStringImage(photo);
-            Log.i(LOG_TAG, "uploadimagestr" + uploadImagestr);
+            Log.i(LOG_TAG, "imageURI: " + imageUri);
+            Intent i = new Intent(this, PreviewActivity.class);
+            i.putExtra("imageUri", imageUri.toString());
+            startActivity(i);
 
         }
     }
@@ -558,7 +463,7 @@ Request location update. This must be called in onResume if the user has allowed
                 lng = Double.toString(locationData.getLocation().getLongitude());
 
 
-                getImages();
+                getImageURLs();
 
 
 //                //Now we have the location.
