@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Button;
@@ -50,11 +51,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(customViewHolder.imageView);
 
-            customViewHolder.textView.setText(feedItem.getUserName());
+        customViewHolder.textView.setText(feedItem.getUserName());
 
-            Log.i(LOG_TAG, "getuser name " + feedItem.getUserName());
+        Log.i(LOG_TAG, "getuser name " + feedItem.getUserName());
 
-            customViewHolder.buttonView.setText(feedItem.getDescription());
+        customViewHolder.descriptionView.setText(feedItem.getDescription());
 
     }
 
@@ -67,14 +68,16 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
 
         protected ImageView imageView;
         protected TextView textView;
-        protected Button buttonView;
+        protected ImageButton commentbtn;
+        protected TextView descriptionView;
 
         public CustomViewHolder(View view) {
             super(view);
 
+            this.descriptionView = (TextView) view.findViewById(R.id.description);
             this.imageView = (ImageView) view.findViewById(R.id.item_img);
             this.textView = (TextView) view.findViewById(R.id.username);
-            this.buttonView = (Button) view.findViewById(R.id.btn);
+            this.commentbtn = (ImageButton) view.findViewById(R.id.btn);
         }
     }
 

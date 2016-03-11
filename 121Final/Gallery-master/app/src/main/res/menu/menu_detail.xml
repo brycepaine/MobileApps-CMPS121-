@@ -2,6 +2,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.grafixartist.gallery.DetailActivity">
+    <item
+        android:id="@+id/action_example"
+        android:icon="@drawable/ic_action_action_autorenew"
+        android:title="example"
+        app:showAsAction="ifRoom" />
     <item android:id="@+id/action_upload" android:title="Upload Picture"
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_take" android:title="Take Picture"
