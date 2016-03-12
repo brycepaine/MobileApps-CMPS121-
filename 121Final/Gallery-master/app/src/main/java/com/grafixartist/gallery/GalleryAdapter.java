@@ -59,6 +59,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
 
     }
 
+    public void clearData() {
+        int size = this.dataList.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                this.dataList.remove(0);
+            }
+
+            this.notifyItemRangeRemoved(0, size);
+        }
+    }
+
     @Override
     public int getItemCount() {
         return (null != dataList ? dataList.size() : 0);

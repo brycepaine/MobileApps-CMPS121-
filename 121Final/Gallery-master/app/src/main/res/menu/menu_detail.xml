@@ -2,8 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.grafixartist.gallery.DetailActivity">
+    <item android:id="@+id/spinner"
+        android:title ="example"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.Spinner" />
     <item
-        android:id="@+id/action_example"
+        android:id="@+id/refresh"
         android:icon="@drawable/ic_action_action_autorenew"
         android:title="example"
         app:showAsAction="ifRoom" />

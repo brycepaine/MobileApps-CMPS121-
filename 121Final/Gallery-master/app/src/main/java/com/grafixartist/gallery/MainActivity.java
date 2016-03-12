@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,9 +33,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.grafixartist.gallery.response.ImageResult;
@@ -43,8 +47,12 @@ import com.grafixartist.gallery.response.ImageURLResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -67,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private GalleryAdapter adapter;
     private ProgressBar progressBar;
+    private boolean refresh;
 
 
     private LocationData locationData;
@@ -74,31 +83,56 @@ public class MainActivity extends AppCompatActivity {
     private String lat;
     private String user_name;
 
+    private Integer radius;
+    private Integer theposition;
+
 
     private Uri imageUri;
     private String uploadImagestr;
 
     private SharedPreferences settings;
 
+    ArrayList<String> colorList;
+
+    private HashMap<String, Integer> spinnerHash = new HashMap<String, Integer>();
+    private String spinnerHashKey;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         Log.i(LOG_TAG, "on create");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        refresh = false;
+        Log.i(LOG_TAG, "refresh on create " + refresh);
+        spinnerHash.put("5 Miles",0);
+        spinnerHash.put("10 Miles", 1);
+        spinnerHash.put("30 Miles", 2);
+        spinnerHash.put("50 Miles", 3);
     }
 
 
     @Override
     protected void onResume(){
         Log.i(LOG_TAG, "on resume");
+        Log.i(LOG_TAG, "refresh on resume " + refresh);
 
-        locationData = LocationData.getLocationData();
+
+
+        if(!refresh) {
+            locationData = LocationData.getLocationData();
+        }
+
+        refresh = false;
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         lat = settings.getString("lat", null);
         lng = settings.getString("lng", null);
         user_name = settings.getString("user_name", null);
+        Log.i(LOG_TAG, "radius on resume " + radius);
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
@@ -128,19 +162,20 @@ public class MainActivity extends AppCompatActivity {
     }
     protected void onPause(){
         Log.i(LOG_TAG, "on pause");
-        if(lat != null && lng != null) {
+        removeLocationUpdate();
+        refresh = false;
+        if(lat != null && lng != null && !refresh) {
             settings = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor e = settings.edit();
             e.putString("lat", lat);
             e.putString("lng", lng);
             e.commit();
         }
-//        mydata.clear();
+        adapter.clearData();
 
         Log.i(LOG_TAG, "onPause lat lng: " + lat + lng);
         super.onPause();
     }
-
 
 
     private void loadImages(){
@@ -168,6 +203,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getImageURLs(){
+
+        removeLocationUpdate();
         Log.i(LOG_TAG, "get image urls");
         setProgressBarIndeterminateVisibility(true);
 
@@ -206,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
                     imageModel.setUrl("http://imagegallery.netai.net/pictures/" + res.getImageId() + ".JPG");
                     imageModel.setDescription(res.getDescription());
                     imageModel.setImageID(res.getImageId());
+
+
 
                     Log.i(LOG_TAG, "image info list at :" + res + " username: " + res.getUserName()
                             + " URL : " + imageModel.getUrl() + "  description  " + res.getDescription());
@@ -247,6 +286,55 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_detail, menu);
+        MenuItem mSpinnerItem = menu.findItem(R.id.spinner);
+        // Extract color list as keySet from colors hashmap
+
+//        colorList =  new ArrayList<String>(colors.keySet());
+//        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
+//        ArrayAdapter<String> spin_adapter = new ArrayAdapter<String>(this, R.layout.spinner_layout, colorList);
+//        spinner.setAdapter(spin_adapter);
+        View view = mSpinnerItem.getActionView();
+        if (view instanceof Spinner)
+        {
+            Spinner spinner = (Spinner) view;
+            spinner.setAdapter( ArrayAdapter.createFromResource( this,
+                    R.array.spinner_data,
+                    android.R.layout.simple_spinner_dropdown_item ) );
+
+            settings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            radius = settings.getInt("spinner",5);
+
+            theposition = spinnerHash.get(radius + " Miles");
+            Log.i(LOG_TAG, "spinner hash position" + theposition + " radius:" + radius);
+            spinner.setSelection(theposition);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Log.i(LOG_TAG, "spinner pos " + position);
+
+                    switch(position){
+                        case 0: radius = 5;
+                            break;
+                        case 1: radius = 10;
+                            break;
+                        case 2: radius = 30;
+                            break;
+                        case 3: radius = 50;
+                            break;
+                    }
+                    Log.i(LOG_TAG, "radius " + radius);
+                    SharedPreferences.Editor e = settings.edit();
+                    e.putInt("spinner", radius);
+                    e.commit();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
+        }
         return true;
     }
 
@@ -257,6 +345,19 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+
+        if(id == R.id.refresh){
+            refresh = true;
+            SharedPreferences.Editor e = settings.edit();
+            e.putString("lat", null);
+            e.putString("lng", null);
+            e.commit();
+            Log.i(LOG_TAG, "lat after refresh should be null" + settings.getString("lat", null));
+            adapter.clearData();
+            progressBar.setVisibility(View.VISIBLE);
+            requestLocationUpdate();
+
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_upload) {
             showFileChooser();
@@ -286,13 +387,7 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    public String getStringImage(Bitmap bmp){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        return encodedImage;
-    }
+
 
     private void clickpic() {
         // Check Camera
@@ -339,6 +434,7 @@ public class MainActivity extends AppCompatActivity {
 Request location update. This must be called in onResume if the user has allowed location sharing
  */
     private void requestLocationUpdate(){
+        Log.i(LOG_TAG, "requesting update");
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (locationManager != null &&
                 (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
@@ -443,7 +539,7 @@ Request location update. This must be called in onResume if the user has allowed
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-
+            Log.i(LOG_TAG, "on location changed");
             Location lastLocation = locationData.getLocation();
 
             // Do something with the location you receive.
@@ -462,7 +558,9 @@ Request location update. This must be called in onResume if the user has allowed
                 lat = Double.toString(locationData.getLocation().getLatitude());
                 lng = Double.toString(locationData.getLocation().getLongitude());
 
-
+                if(!refresh){
+                    Log.i(LOG_TAG, "Not REFRESH");
+                }else Log.i(LOG_TAG, "REFRESH");
                 getImageURLs();
 
 

@@ -5,4 +5,13 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="hello_world">Hello world!</string>
+
+
+    <string-array name="spinner_data">
+        <item>5 Miles</item>
+        <item>10 Miles</item>
+        <item>30 Miles</item>
+        <item>50 Miles</item>
+    </string-array>
+
 </resources>

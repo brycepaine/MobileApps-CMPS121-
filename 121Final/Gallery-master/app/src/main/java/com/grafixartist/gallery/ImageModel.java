@@ -8,7 +8,8 @@ import android.os.Parcelable;
  */
 public class ImageModel implements Parcelable {
 
-    String user_name, url, description, timestamp, image_id;
+    String user_name, url, description, image_id;
+    Object timestamp;
 
     public ImageModel() {
 
@@ -18,7 +19,7 @@ public class ImageModel implements Parcelable {
         user_name = in.readString();
         url = in.readString();
         description = in.readString();
-        timestamp = in.readString();
+//        timestamp = in.rea
         image_id = in.readString();
     }
 
@@ -54,9 +55,9 @@ public class ImageModel implements Parcelable {
 
     public void setDescription(String description){this.description = description;}
 
-    public String getTimestamp(){return timestamp;}
+//    public String getTimestamp(){return timestamp;}
 
-    public void setTimestamp(String timestamp){this.timestamp = timestamp;}
+//    public void setTimestamp(Object timestamp){this.timestamp = timestamp;}
 
     public String getImageID(){return image_id;}
 
