@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +47,9 @@ import com.grafixartist.gallery.response.ImageURLResponse;
 import com.grafixartist.gallery.adapter.GalleryAdapter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -121,8 +125,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i(LOG_TAG, "on resume");
         Log.i(LOG_TAG, "refresh on resume " + refresh);
 
-
-
+        
         if(!refresh) {
             locationData = LocationData.getLocationData();
         }
@@ -393,6 +396,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void clickpic() {
         // Check Camera
+        Log.i(LOG_TAG, "click pick");
         if (getApplicationContext().getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_CAMERA)) {
             // Open default camera
@@ -421,12 +425,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         }
         if(requestCode==TAKE_PIC_REQUEST &&resultCode==RESULT_OK&&data!=null){
+            Log.i(LOG_TAG, "thumbnail "  + data.getData() );
             imageUri = data.getData();
             Log.i(LOG_TAG, "imageURI: " + imageUri);
             Intent i = new Intent(this, PreviewActivity.class);
             i.putExtra("imageUri", imageUri.toString());
             startActivity(i);
-
         }
     }
 

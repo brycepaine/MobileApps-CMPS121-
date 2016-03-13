@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    android:layout_gravity="left">
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/profile_pic_list"
+        android:paddingRight="3dp"
+    />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/get_comment"
+        android:layout_weight="1"
+        android:text="get_message"
+        android:paddingLeft="5dp"
+        />
+
+
+    <ImageButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/editicon"
+        android:src = "@drawable/edit"
+        android:scaleType="fitXY"
+        android:layout_gravity="left"
+        android:layout_below="@id/get_comment"
+        android:visibility="invisible"
+        android:clickable="false"
+        />
+
+    <ImageButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/delete"
+        android:src = "@drawable/trashicon"
+        android:scaleType="fitXY"
+        android:layout_gravity="right"
+        android:layout_below="@id/get_comment"
+        android:visibility="invisible"
+        android:clickable="false"
+        />
+
+
+</LinearLayout>

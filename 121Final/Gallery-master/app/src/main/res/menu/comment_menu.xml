@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.grafixartist.gallery.CommentActivity">
+    <item android:id="@+id/signout" android:title="Signout"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/homepage" android:title="HomePage"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/mappage" android:title="MapPage"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/delete_photo" android:title="Delete"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/refresh" android:title="Refresh"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/comment" android:title="Comment"
+        android:orderInCategory="100" app:showAsAction="never" />
+
+</menu>

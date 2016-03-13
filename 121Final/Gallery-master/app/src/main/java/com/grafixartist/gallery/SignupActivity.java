@@ -297,7 +297,7 @@ public class SignupActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         //-- Upload Photo
-        if ((requestCode == PICK_IMAGE_REQUEST || requestCode == TAKE_PIC_REQUEST)
+        if (requestCode == PICK_IMAGE_REQUEST
                 && resultCode == RESULT_OK && data != null) {
             imageUri = data.getData();
             Log.i(LOG_TAG, "imageURI: " + imageUri);
@@ -326,6 +326,16 @@ public class SignupActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+
+        if(requestCode==TAKE_PIC_REQUEST &&resultCode==RESULT_OK&&data!=null){
+            Log.i(LOG_TAG, "thumbnail "  + data.getData() );
+            imageUri = data.getData();
+            Log.i(LOG_TAG, "imageURI: " + imageUri);
+            Intent i = new Intent(this, PreviewActivity.class);
+            i.putExtra("imageUri", imageUri.toString());
+            startActivity(i);
         }
     }
 
