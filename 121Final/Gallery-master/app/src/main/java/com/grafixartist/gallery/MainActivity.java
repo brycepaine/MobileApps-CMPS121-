@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i(LOG_TAG, "on resume");
         Log.i(LOG_TAG, "refresh on resume " + refresh);
 
-        
+
         if(!refresh) {
             locationData = LocationData.getLocationData();
         }
@@ -175,7 +175,11 @@ public class MainActivity extends AppCompatActivity {
             e.putString("lng", lng);
             e.commit();
         }
-        adapter.clearData();
+
+        if (adapter != null){
+            adapter.clearData();
+
+        }
 
         Log.i(LOG_TAG, "onPause lat lng: " + lat + lng);
         super.onPause();

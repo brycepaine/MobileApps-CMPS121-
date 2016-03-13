@@ -1,12 +1,15 @@
 package com.grafixartist.gallery;
 
 import android.app.ProgressDialog;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -300,6 +303,52 @@ public class SignupActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST
                 && resultCode == RESULT_OK && data != null) {
             imageUri = data.getData();
+
+
+
+            SecureRandomString srs = new SecureRandomString();
+            image_id = srs.nextString();
+
+            ImageView iv = (ImageView) findViewById(R.id.profile_image);
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
+                int height = size.y;
+                if (bitmap.getWidth() > width || bitmap.getHeight() > height) {
+                    bitmap = scaleDown(bitmap, width, true);
+                }
+
+                ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
+                int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+                Log.i(LOG_TAG, "orientation " + orientation);
+
+                switch(orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        bitmap = rotateImage(bitmap, 90);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        bitmap = rotateImage(bitmap, 180);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        bitmap = rotateImage(bitmap, 270);
+                        break;
+
+                    // etc.
+                }
+                iv.setImageBitmap(bitmap);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        if(requestCode==TAKE_PIC_REQUEST &&resultCode==RESULT_OK&&data!=null) {
+            Log.i(LOG_TAG, "thumbnail " + data.getData());
+            imageUri = data.getData();
             Log.i(LOG_TAG, "imageURI: " + imageUri);
 
 
@@ -315,27 +364,29 @@ public class SignupActivity extends AppCompatActivity {
                 int width = size.x;
                 int height = size.y;
                 if (bitmap.getWidth() > width || bitmap.getHeight() > height) {
-                    bitmapScaled = scaleDown(bitmap, width, true);
-                    iv.setImageBitmap(bitmapScaled);
-                    Log.i(LOG_TAG, "bitmap scaled");
-                    bitmap = bitmapScaled;
-                } else {
-                    iv.setImageBitmap(bitmap);
-                    Log.i(LOG_TAG, "bitmap notscaled");
+                    bitmap = scaleDown(bitmap, width, true);
                 }
+                ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
+                int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+                Log.i(LOG_TAG, "orientation " + orientation);
+
+                switch(orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        bitmap = rotateImage(bitmap, 90);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        bitmap = rotateImage(bitmap, 180);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        bitmap = rotateImage(bitmap, 270);
+                        break;
+
+                    // etc.
+                }
+                iv.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-
-
-        if(requestCode==TAKE_PIC_REQUEST &&resultCode==RESULT_OK&&data!=null){
-            Log.i(LOG_TAG, "thumbnail "  + data.getData() );
-            imageUri = data.getData();
-            Log.i(LOG_TAG, "imageURI: " + imageUri);
-            Intent i = new Intent(this, PreviewActivity.class);
-            i.putExtra("imageUri", imageUri.toString());
-            startActivity(i);
         }
     }
 
@@ -385,5 +436,26 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    private static Bitmap rotateImage(Bitmap source, float angle) {
+        Bitmap retVal;
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        retVal = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+
+        return retVal;
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(this, contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
     }
 }

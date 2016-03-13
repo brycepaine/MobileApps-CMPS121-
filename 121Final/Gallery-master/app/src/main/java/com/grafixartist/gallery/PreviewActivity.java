@@ -108,9 +108,6 @@ public class PreviewActivity extends AppCompatActivity {
             if(bitmap.getWidth()>width || bitmap.getHeight() > height){
                 bitmap = scaleDown(bitmap, width,true);
                 Log.i(LOG_TAG,"bitmap scaled");
-            }else {
-
-                Log.i(LOG_TAG,"bitmap notscaled");
             }
 
             ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));

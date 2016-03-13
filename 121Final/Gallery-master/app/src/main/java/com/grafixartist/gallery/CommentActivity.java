@@ -109,11 +109,7 @@ public class CommentActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
-        if (id == R.id.mappage){
-            Intent intent = new Intent(CommentActivity.this, MapActivity.class);
-            intent.putExtra("image_id", image_id);
-            startActivity(intent);
-        }
+
         if (id == R.id.delete_photo){
             Intent intent = new Intent(this, PopPhotoDelete.class);
             intent.putExtra("image_id", image_id);
