@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(LOG_TAG, "Error, please try again");
                 }
                 ArrayList<ImageResult> imageInfo = new ArrayList<ImageResult>(response.body().getImageResult());
-                for (int i = 0; i < imageInfo.size(); i++) {
+                for (int i = imageInfo.size()-1; i >= 0; i--) {
                     ImageResult res = imageInfo.get(i);
                     //if image is within proximity to user's location, then display it here
                     ImageModel imageModel = new ImageModel();
@@ -252,6 +252,9 @@ public class MainActivity extends AppCompatActivity {
                     imageModel.setUrl("http://imagegallery.netai.net/pictures/" + res.getImageId() + ".JPG");
                     imageModel.setDescription(res.getDescription());
                     imageModel.setImageID(res.getImageId());
+                    imageModel.setTimestamp(res.getTimestamp().toString());
+                    Log.i(LOG_TAG, "TIMESTAMP " + res.getTimestamp());
+
 
 
 

@@ -57,6 +57,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
 
         customViewHolder.descriptionView.setText(feedItem.getDescription());
 
+        customViewHolder.time.setText(feedItem.getTimestamp());
+
     }
 
     public void clearData() {
@@ -79,7 +81,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
 
         protected ImageView imageView;
         protected TextView textView;
-//        protected ImageButton commentbtn;
+        protected TextView time;
         protected TextView descriptionView;
 
         public CustomViewHolder(View view) {
@@ -88,7 +90,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
             this.descriptionView = (TextView) view.findViewById(R.id.description);
             this.imageView = (ImageView) view.findViewById(R.id.item_img);
             this.textView = (TextView) view.findViewById(R.id.username);
-//            this.commentbtn = (ImageButton) view.findViewById(R.id.btn);
+            this.time = (TextView) view.findViewById(R.id.timestamp);
         }
     }
 

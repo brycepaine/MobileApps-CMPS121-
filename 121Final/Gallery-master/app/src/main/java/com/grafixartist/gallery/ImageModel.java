@@ -3,13 +3,15 @@ package com.grafixartist.gallery;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Date;
+
 /**
  * Created by Suleiman19 on 10/22/15.
  */
 public class ImageModel implements Parcelable {
 
     String user_name, url, description, image_id;
-    Object timestamp;
+    String timestamp;
 
     public ImageModel() {
 
@@ -19,7 +21,7 @@ public class ImageModel implements Parcelable {
         user_name = in.readString();
         url = in.readString();
         description = in.readString();
-//        timestamp = in.rea
+        timestamp = in.readString();
         image_id = in.readString();
     }
 
@@ -55,9 +57,9 @@ public class ImageModel implements Parcelable {
 
     public void setDescription(String description){this.description = description;}
 
-//    public String getTimestamp(){return timestamp;}
+    public String getTimestamp(){return timestamp;}
 
-//    public void setTimestamp(Object timestamp){this.timestamp = timestamp;}
+    public void setTimestamp(String timestamp){this.timestamp = timestamp;}
 
     public String getImageID(){return image_id;}
 
