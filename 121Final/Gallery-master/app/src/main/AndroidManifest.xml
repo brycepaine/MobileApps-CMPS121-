@@ -34,6 +34,11 @@
         <activity android:name="com.grafixartist.gallery.SignupActivity" android:theme="@style/AppTheme.Dark" />
         <activity android:name=".PreviewActivity" android:theme="@style/AppTheme.Dark"/>
         <activity android:name=".CommentActivity"/>
+
+        <activity android:name=".popup.PopPhotoDelete" android:theme="@style/AppTheme.CustomPop" />
+        <activity android:name=".popup.PopCommentDelete" android:theme="@style/AppTheme.CustomPop" />
+        <activity android:name=".popup.PopCommentEdit" android:theme="@style/AppTheme.CustomPop" />
+        <activity android:name=".popup.PopCommentAdd" android:theme="@style/AppTheme.CustomPop" />
     </application>
 
 </manifest>

@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import com.grafixartist.gallery.response.ImageResult;
 import com.grafixartist.gallery.response.ImageURLResponse;
+import com.grafixartist.gallery.adapter.GalleryAdapter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -187,19 +188,20 @@ public class MainActivity extends AppCompatActivity {
         adapter = new GalleryAdapter(MainActivity.this, mydata);
         mRecyclerView.setAdapter(adapter);
 
-//        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
-//                new RecyclerItemClickListener.OnItemClickListener() {
-//
-//                    @Override
-//                    public void onItemClick(View view, int position) {
-//                        Log.i(LOG_TAG, "mydata: " + mydata + " position: " + position);
-//                        String imageToPass = mydata.get(position).getImageID();
-//                        Intent intent = new Intent(MainActivity.this, CommentActivity.class);
-//                        intent.putExtra("image_id", imageToPass);
-//                        startActivity(intent);
-//
-//                    }
-//                }));
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
+                new RecyclerItemClickListener.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Log.i(LOG_TAG, "mydata: " + mydata + " position: " + position);
+                        String imageToPass = mydata.get(position).getImageID();
+                        Intent intent = new Intent(MainActivity.this, CommentActivity.class);
+                        intent.putExtra("image_id", imageToPass);
+                        intent.putExtra("user_name", user_name);
+                        startActivity(intent);
+
+                    }
+                }));
     }
 
     private void getImageURLs(){

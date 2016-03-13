@@ -1,11 +1,14 @@
 package com.grafixartist.gallery;
 
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,7 +25,7 @@ import android.widget.Toast;
 
 
 import com.grafixartist.gallery.response.UploadResponse;
-
+import android.media.ExifInterface;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -93,20 +96,42 @@ public class PreviewActivity extends AppCompatActivity {
         ImageView iv = (ImageView) findViewById(R.id.imageView);
         try {
             bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+
+
+
+
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
             int width = size.x;
             int height = size.y;
             if(bitmap.getWidth()>width || bitmap.getHeight() > height){
-                bitmapScaled = scaleDown(bitmap, width,true);
-                iv.setImageBitmap(bitmapScaled);
+                bitmap = scaleDown(bitmap, width,true);
                 Log.i(LOG_TAG,"bitmap scaled");
-                bitmap = bitmapScaled;
             }else {
-                iv.setImageBitmap(bitmap);
+
                 Log.i(LOG_TAG,"bitmap notscaled");
             }
+
+            ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
+            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+            Log.i(LOG_TAG, "orientation " + orientation);
+
+            switch(orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    bitmap = rotateImage(bitmap, 90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    bitmap = rotateImage(bitmap, 180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    bitmap = rotateImage(bitmap, 270);
+                    break;
+
+                // etc.
+            }
+            iv.setImageBitmap(bitmap);
+
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -240,6 +265,26 @@ public class PreviewActivity extends AppCompatActivity {
         return httpRequestParams;
     }
 
+    private static Bitmap rotateImage(Bitmap source, float angle) {
+        Bitmap retVal;
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        retVal = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+
+        return retVal;
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(this, contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
+    }
 }
 
 

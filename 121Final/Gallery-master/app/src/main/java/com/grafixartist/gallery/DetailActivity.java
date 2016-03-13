@@ -1,5 +1,6 @@
 package com.grafixartist.gallery;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -7,16 +8,42 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.grafixartist.gallery.adapter.CommentAdapter;
+import com.grafixartist.gallery.adapter.DepthPageTransformer;
+import com.grafixartist.gallery.adapter.SectionsPagerAdapter;
+import com.grafixartist.gallery.response.CommentResult;
+import com.grafixartist.gallery.response.Example;
+
+import com.grafixartist.gallery.response.ImageURLResponse;
+import com.grafixartist.gallery.response.ImageResult;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.GsonConverterFactory;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -33,25 +60,63 @@ public class DetailActivity extends AppCompatActivity {
     public ArrayList<ImageModel> data = new ArrayList<>();
     int pos;
 
+    SharedPreferences settings;
+    public CommentAdapter aa;
+    String user_name;
+    String image_id;
+    String comment_id;
+    String message;
+    ProgressBar spinner;
+    EditText comment;
+
+    String list_comment;
+    String list_timestamp;
+    String list_comment_id;
+    String list_user_name;
+    String list_profile_pic;
+
+    String list_image_id;
+    String list_description;
+    String getList_user_name;
+
     Toolbar toolbar;
+    ArrayList<CommentElement> aList;
+    public static String LOG_TAG = "ProfileApplication";
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
 
+    public interface GetService {
+        @GET("default/get_comments")
+        Call<Example> get_comment(@Query("image_id") String image_id);
+    }
+
+    public interface UserPicService{
+        @GET("default/user_images")
+        Call<ImageURLResponse> get_user_pic(@Query("user_name") String user_name);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        Log.i("DetailActivity", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
         toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
-        data = getIntent().getParcelableArrayListExtra("data");
-        pos = getIntent().getIntExtra("pos", 0);
+        //data = getIntent().getParcelableArrayListExtra("data");
+        //pos = getIntent().getIntExtra("pos", 0);
+        pos = 0;
 
-        setTitle(data.get(pos).getUserName());
+        user_name = getIntent().getStringExtra("user_name");
+
+        getUserPic(user_name);
+
+        setTitle(user_name);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -73,7 +138,9 @@ public class DetailActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
 
                 //noinspection ConstantConditions
-                setTitle(data.get(position).getUserName());
+                setTitle(user_name);
+//                aList.clear();
+//                refreshComments(data.get(position).getImageID());
 
             }
 
@@ -102,102 +169,63 @@ public class DetailActivity extends AppCompatActivity {
 //        int id = item.getItemId();
 //
 //        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
+//       // if (id == R.id.action_settings) {
+//       //     return true;
+//       // }
 //
 //        return super.onOptionsItemSelected(item);
 //    }
 
+    public void getUserPic(final String user_name){
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        public ArrayList<ImageModel> data = new ArrayList<>();
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // set your desired log level
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
 
-        public SectionsPagerAdapter(FragmentManager fm, ArrayList<ImageModel> data) {
-            super(fm);
-            this.data = data;
-        }
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://empirical-realm-123103.appspot.com/pictureApp/")	//We are using Foursquare API to get data
+                .addConverterFactory(GsonConverterFactory.create())	//parse Gson string
+                .client(httpClient)	//add logging
+                .build();
 
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position, data.get(position).getUserName(), data.get(position).getUrl());
-        }
+        UserPicService userpic_service = retrofit.create(UserPicService.class);
+        Call<ImageURLResponse> GetUserPicCall = userpic_service.get_user_pic(user_name);
 
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return data.size();
-        }
+        //Call retrofit asynchronously
+        GetUserPicCall.enqueue(new Callback<ImageURLResponse>() {
+            @Override
+            public void onResponse(Response<ImageURLResponse> response) {
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return data.get(position).getUserName();
-        }
-    }
+                if (response.code() == 500) {
+                    Log.e(LOG_TAG, "Error, please try again");
+                }
+                ArrayList<ImageResult> imageInfo = new ArrayList<ImageResult>(response.body().getImageResult());
+                for (int i = 0; i < imageInfo.size(); i++) {
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
 
-        String name, url;
-        int pos;
-        private static final String ARG_SECTION_NUMBER = "section_number";
-        private static final String ARG_IMG_TITLE = "image_title";
-        private static final String ARG_IMG_URL = "image_url";
+                    ImageResult res = imageInfo.get(i);
+                    //if image is within proximity to user's location, then display it here
+                    ImageModel imageModel = new ImageModel();
+                    imageModel.setUserName(user_name);
+                    imageModel.setUrl("http://imagegallery.netai.net/pictures/" + res.getImageId() + ".JPG");
+                    imageModel.setDescription(res.getDescription());
+                    imageModel.setImageID(res.getImageId());
 
-        @Override
-        public void setArguments(Bundle args) {
-            super.setArguments(args);
-            this.pos = args.getInt(ARG_SECTION_NUMBER);
-            this.name = args.getString(ARG_IMG_TITLE);
-            this.url = args.getString(ARG_IMG_URL);
-        }
+                    Log.i("OnResponse", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + imageModel.getUrl());
+                    Log.i(LOG_TAG, "URL: " + imageModel.getUrl() + "  description: " + res.getDescription());
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber, String name, String url) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            args.putString(ARG_IMG_TITLE, name);
-            args.putString(ARG_IMG_URL, url);
-            fragment.setArguments(args);
-            return fragment;
-        }
+                    Log.i("URL : ", imageModel.getUrl());
+                    data.add(imageModel);
+                }
+            }
+            @Override
+            public void onFailure(Throwable t) {
+                // Log error here since request failed
+            }
 
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public void onStart() {
-            super.onStart();
-
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
-            final ImageView imageView = (ImageView) rootView.findViewById(R.id.detail_image);
-
-            Glide.with(getActivity()).load(url).thumbnail(0.1f).into(imageView);
-
-            return rootView;
-        }
-
+        });
     }
 }
