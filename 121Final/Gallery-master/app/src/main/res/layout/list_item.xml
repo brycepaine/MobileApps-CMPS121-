@@ -15,18 +15,10 @@
 
 
 
-            <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/item_img"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:adjustViewBounds="true"/>
-
             <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:id="@+id/prof_pic"
-                android:layout_below="@id/item_img"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"/>
 
@@ -35,12 +27,51 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/username"
                 android:text="name"
-                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:gravity="center_vertical"
+                android:textColor="@color/colorPrimary"
                 android:layout_toRightOf="@+id/prof_pic"
-                android:paddingLeft="5dp"
+                android:paddingLeft="10dp"
 
-                android:layout_below="@+id/item_img"
-                 />
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/timestamp"
+                android:text="thththht"
+                android:textColor="@color/jet"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"/>
+
+            <ImageView
+                android:id="@+id/marker"
+                android:layout_width="wrap_content"
+                android:layout_height="18dp"
+                android:layout_below="@+id/timestamp"
+                android:tint="@color/primary"
+                android:layout_marginLeft="-10dp"
+                android:layout_alignLeft="@id/timestamp"
+                android:src="@drawable/ic_place_white_24dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/miles_away"
+                android:text = "distance"
+                android:textColor="@color/oil"
+                android:layout_toRightOf="@+id/marker"
+                android:layout_below="@+id/timestamp"/>
+
+
+            <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/item_img"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:adjustViewBounds="true"
+                android:layout_below="@+id/prof_pic"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -49,31 +80,13 @@
                 android:text="description"
                 android:textColor="@android:color/black"
                 android:layout_below="@+id/item_img"
-                android:maxLines="3"
-                android:paddingRight="3dp"
-                android:layout_toStartOf="@+id/timestamp"
-                android:layout_toRightOf="@+id/username"
-                android:layout_toEndOf="@+id/username" />
+                android:paddingStart="5dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingEnd="5dp"
+                android:layout_alignParentLeft="true" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/timestamp"
-                android:text="thththht"
-                android:textColor="@android:color/black"
-                android:layout_below="@+id/item_img"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/miles_away"
-                android:text = "distance"
-                android:textColor="@android:color/black"
-                android:layout_below="@+id/timestamp"
-                android:layout_alignParentRight="true"
-                android:layout_alignLeft="@id/timestamp"/>
 
             <!--<ImageButton-->
                 <!--android:src="@drawable/ic_comment_black_24dp"-->

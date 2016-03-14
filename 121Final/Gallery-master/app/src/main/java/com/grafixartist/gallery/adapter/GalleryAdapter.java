@@ -1,6 +1,7 @@
 package com.grafixartist.gallery.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,11 +11,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.grafixartist.gallery.CommentActivity;
 import com.grafixartist.gallery.ImageModel;
+import com.grafixartist.gallery.MainActivity;
 import com.grafixartist.gallery.R;
+import com.grafixartist.gallery.UserActivity;
 
 import java.util.List;
 
@@ -44,9 +49,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
     }
 
     @Override
-    public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
+    public void onBindViewHolder(CustomViewHolder customViewHolder, final int i) {
 
-            ImageModel feedItem = dataList.get(i);
+            final ImageModel feedItem = dataList.get(i);
 
             Glide.with(mContext).load(feedItem.getUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -65,6 +70,32 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
         customViewHolder.time.setText(feedItem.getTimeago());
 
         customViewHolder.distance.setText(feedItem.getDistance());
+
+        customViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent;
+                Log.i(LOG_TAG, "image view clickd");
+                intent = new Intent(mContext.getApplicationContext(), CommentActivity.class);
+                intent.putExtra("image_id", feedItem.getImageID());
+                intent.putExtra("user_name", feedItem.getUserName());
+                mContext.startActivity(intent);
+            }
+        });
+
+        customViewHolder.profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent;
+                Log.i(LOG_TAG, "profile clickd");
+                intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
+                intent.putExtra("user_name", feedItem.getUserName());
+                mContext.startActivity(intent);
+            }
+        });
+
+
+
 
 
     }

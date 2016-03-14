@@ -44,7 +44,7 @@ public class ImageModel implements Parcelable {
     }
 
     public void setUserName(String name) {
-        this.user_name = name + ": ";
+        this.user_name = name;
     }
 
     public String getUrl() {

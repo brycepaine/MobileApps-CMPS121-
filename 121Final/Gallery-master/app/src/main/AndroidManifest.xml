@@ -15,7 +15,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
@@ -34,11 +34,7 @@
         <activity android:name="com.grafixartist.gallery.SignupActivity" android:theme="@style/AppTheme.Dark" />
         <activity android:name=".PreviewActivity" android:theme="@style/AppTheme.Dark"/>
         <activity android:name=".CommentActivity"/>
-
-        <activity android:name=".popup.PopPhotoDelete" android:theme="@style/AppTheme.CustomPop" />
-        <activity android:name=".popup.PopCommentDelete" android:theme="@style/AppTheme.CustomPop" />
-        <activity android:name=".popup.PopCommentEdit" android:theme="@style/AppTheme.CustomPop" />
-        <activity android:name=".popup.PopCommentAdd" android:theme="@style/AppTheme.CustomPop" />
+        <activity android:name=".UserActivity"/>
     </application>
 
 </manifest>

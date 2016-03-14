@@ -195,20 +195,22 @@ public class MainActivity extends AppCompatActivity {
         adapter = new GalleryAdapter(MainActivity.this, mydata);
         mRecyclerView.setAdapter(adapter);
 
-        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
-                new RecyclerItemClickListener.OnItemClickListener() {
-
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Log.i(LOG_TAG, "mydata: " + mydata + " position: " + position);
-                        String imageToPass = mydata.get(position).getImageID();
-                        Intent intent = new Intent(MainActivity.this, CommentActivity.class);
-                        intent.putExtra("image_id", imageToPass);
-                        intent.putExtra("user_name", user_name);
-                        startActivity(intent);
-
-                    }
-                }));
+//        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
+//                new RecyclerItemClickListener.OnItemClickListener() {
+//
+//                    @Override
+//                    public void onItemClick(View view, int position) {
+//                        Log.i(LOG_TAG, "mydata: " + mydata + " position: " + position);
+//                        String imageToPass = mydata.get(position).getImageID();
+//                        Log.i(LOG_TAG, "the view is " + view.getId());
+//                        Log.i(LOG_TAG, "other view is" + findViewById(R.id.imageView));
+//                        Intent intent = new Intent(MainActivity.this, CommentActivity.class);
+//                        intent.putExtra("image_id", imageToPass);
+//                        intent.putExtra("user_name", user_name);
+//                        startActivity(intent);
+//
+//                    }
+//                }));
     }
 
     private void getImageURLs(){
