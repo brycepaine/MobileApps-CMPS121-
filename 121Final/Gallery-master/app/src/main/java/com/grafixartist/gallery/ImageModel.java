@@ -10,8 +10,7 @@ import java.util.Date;
  */
 public class ImageModel implements Parcelable {
 
-    String user_name, url, description, image_id;
-    String timestamp;
+    String user_name, url, description, image_id, timestamp, distance,timeago, profile_pic;
 
     public ImageModel() {
 
@@ -23,6 +22,9 @@ public class ImageModel implements Parcelable {
         description = in.readString();
         timestamp = in.readString();
         image_id = in.readString();
+        distance = in.readString();
+        timeago = in.readString();
+        profile_pic = in.readString();
     }
 
     public static final Creator<ImageModel> CREATOR = new Creator<ImageModel>() {
@@ -42,7 +44,7 @@ public class ImageModel implements Parcelable {
     }
 
     public void setUserName(String name) {
-        this.user_name = name;
+        this.user_name = name + ": ";
     }
 
     public String getUrl() {
@@ -52,6 +54,10 @@ public class ImageModel implements Parcelable {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    public String getTimeago(){return timeago;}
+
+    public void setTimeago(String t){this.timeago = t;}
 
     public String getDescription(){return description;}
 
@@ -64,6 +70,14 @@ public class ImageModel implements Parcelable {
     public String getImageID(){return image_id;}
 
     public void setImageID(String im){this.image_id = im;}
+
+    public String getDistance(){return distance;}
+
+    public void setDistance(String d){this.distance = d;}
+
+    public String getProfile(){return profile_pic;}
+
+    public void setProfile(String p){this.profile_pic = p;}
 
 
     @Override

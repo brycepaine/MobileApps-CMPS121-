@@ -98,8 +98,6 @@ public class PreviewActivity extends AppCompatActivity {
             bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
 
 
-
-
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);

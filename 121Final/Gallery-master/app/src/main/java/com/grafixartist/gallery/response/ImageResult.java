@@ -17,9 +17,23 @@ public class ImageResult {
     @SerializedName("description")
     @Expose
     private String description;
+
+
+    @SerializedName("distance")
+    @Expose
+    private String distance;
+
     @SerializedName("timestamp")
     @Expose
     private Object timestamp;
+
+    @SerializedName("timeago")
+    @Expose
+    private String ago;
+
+    @SerializedName("profile_pic")
+    @Expose
+    private String profile_pic;
 
     /**
      *
@@ -92,5 +106,13 @@ public class ImageResult {
     public void setTimestamp(Object timestamp) {
         this.timestamp = timestamp;
     }
+
+    public String getDistance(){return distance;}
+
+    public String getTimeago(){return ago;}
+
+    public void setTimeago(String a){this.ago = a;}
+
+    public String getProfPic(){return profile_pic;}
 
 }

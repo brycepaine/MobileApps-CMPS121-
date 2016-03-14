@@ -252,8 +252,10 @@ public class MainActivity extends AppCompatActivity {
                     imageModel.setUrl("http://imagegallery.netai.net/pictures/" + res.getImageId() + ".JPG");
                     imageModel.setDescription(res.getDescription());
                     imageModel.setImageID(res.getImageId());
-                    imageModel.setTimestamp(res.getTimestamp().toString());
-                    Log.i(LOG_TAG, "TIMESTAMP " + res.getTimestamp());
+//                    imageModel.setTimestamp(res.getTimestamp().toString());
+                    imageModel.setDistance(res.getDistance());
+                    imageModel.setTimeago(res.getTimeago());
+                    imageModel.setProfile("http://imagegallery.netai.net/pictures/" + res.getProfPic() + ".JPG");
 
 
 

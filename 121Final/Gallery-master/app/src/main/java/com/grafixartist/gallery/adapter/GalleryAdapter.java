@@ -1,6 +1,7 @@
 package com.grafixartist.gallery.adapter;
 
 import android.content.Context;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,15 +52,24 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(customViewHolder.imageView);
 
+        Glide.with(mContext)
+                .load(feedItem.getProfile())
+                .into(customViewHolder.profile);
+
         customViewHolder.textView.setText(feedItem.getUserName());
 
         Log.i(LOG_TAG, "getuser name " + feedItem.getUserName());
 
         customViewHolder.descriptionView.setText(feedItem.getDescription());
 
-        customViewHolder.time.setText(feedItem.getTimestamp());
+        customViewHolder.time.setText(feedItem.getTimeago());
+
+        customViewHolder.distance.setText(feedItem.getDistance());
+
 
     }
+
+
 
     public void clearData() {
         int size = this.dataList.size();
@@ -81,8 +91,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
 
         protected ImageView imageView;
         protected TextView textView;
-        protected TextView time;
+        protected TextView distance;
         protected TextView descriptionView;
+        protected TextView time;
+        protected ImageView profile;
 
         public CustomViewHolder(View view) {
             super(view);
@@ -90,7 +102,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
             this.descriptionView = (TextView) view.findViewById(R.id.description);
             this.imageView = (ImageView) view.findViewById(R.id.item_img);
             this.textView = (TextView) view.findViewById(R.id.username);
+            this.distance = (TextView) view.findViewById(R.id.miles_away);
             this.time = (TextView) view.findViewById(R.id.timestamp);
+            this.profile = (ImageView) view.findViewById(R.id.prof_pic);
         }
     }
 
