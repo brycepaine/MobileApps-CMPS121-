@@ -35,6 +35,8 @@
         <activity android:name=".PreviewActivity" android:theme="@style/AppTheme.Dark"/>
         <activity android:name=".CommentActivity"/>
         <activity android:name=".UserActivity"/>
+        <activity android:name=".PmActivity"/>
+        <activity android:name=".SendPmActivity"/>
     </application>
 
 </manifest>

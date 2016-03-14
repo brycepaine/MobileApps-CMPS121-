@@ -64,6 +64,8 @@ public class PreviewActivity extends AppCompatActivity {
     private static String LOG_TAG = "MyApplication";
 
     private String image_id;
+    boolean retrofit_upload;
+    boolean http_upload;
     private String user_name;
     private String description;
     private String comment_id;
@@ -134,6 +136,8 @@ public class PreviewActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        retrofit_upload = false;
+        http_upload = false;
         super.onResume();
     }
 
@@ -184,6 +188,13 @@ public class PreviewActivity extends AppCompatActivity {
             @Override
             public void onResponse(Response<UploadResponse> response) {
                 Log.i(LOG_TAG, "Code is: " + response.code());
+                Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
+                retrofit_upload = true;
+                if(http_upload == true) {
+                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(i);
+                }
+
 //                Log.i(LOG_TAG, "The result is: " + response.body().response);
 //                if (response.body().response.equals("ok")) {
 //                    Log.i(LOG_TAG,"upload succesfull");
@@ -248,8 +259,12 @@ public class PreviewActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid){
             super.onPostExecute(aVoid);
             Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(i);
+            http_upload = true;
+            if(retrofit_upload == true) {
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(i);
+            }
+
         }
     }
 

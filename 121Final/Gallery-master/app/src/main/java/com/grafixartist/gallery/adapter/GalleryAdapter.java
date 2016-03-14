@@ -18,7 +18,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.grafixartist.gallery.CommentActivity;
 import com.grafixartist.gallery.ImageModel;
 import com.grafixartist.gallery.MainActivity;
+import com.grafixartist.gallery.PmActivity;
 import com.grafixartist.gallery.R;
+import com.grafixartist.gallery.SendPmActivity;
 import com.grafixartist.gallery.UserActivity;
 
 import java.util.List;
@@ -83,12 +85,34 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
             }
         });
 
+
         customViewHolder.profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Intent intent;
                 Log.i(LOG_TAG, "profile clickd");
                 intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
+                intent.putExtra("user_name", feedItem.getUserName());
+                mContext.startActivity(intent);
+            }
+        });
+
+        customViewHolder.textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent;
+                Log.i(LOG_TAG, "name clickd");
+                intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
+                intent.putExtra("user_name", feedItem.getUserName());
+                mContext.startActivity(intent);
+            }
+        });
+
+        customViewHolder.sendpm.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                final Intent intent;
+                intent = new Intent(mContext.getApplicationContext(), SendPmActivity.class);
                 intent.putExtra("user_name", feedItem.getUserName());
                 mContext.startActivity(intent);
             }
@@ -126,6 +150,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
         protected TextView descriptionView;
         protected TextView time;
         protected ImageView profile;
+        protected TextView sendpm;
 
         public CustomViewHolder(View view) {
             super(view);
@@ -136,6 +161,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
             this.distance = (TextView) view.findViewById(R.id.miles_away);
             this.time = (TextView) view.findViewById(R.id.timestamp);
             this.profile = (ImageView) view.findViewById(R.id.prof_pic);
+            this.sendpm = (TextView) view.findViewById(R.id.sendpm);
         }
     }
 

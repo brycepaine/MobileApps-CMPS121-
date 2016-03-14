@@ -115,4 +115,6 @@ public class ImageResult {
 
     public String getProfPic(){return profile_pic;}
 
+
+
 }
