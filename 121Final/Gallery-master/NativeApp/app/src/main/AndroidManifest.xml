@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.paine.nativeApp" >
+
+    <uses-feature
+        android:name="android.hardware.Camera"
+        android:required="true"></uses-feature>
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="Native"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme" >
+        <activity android:name="com.paine.nativeApp.MainActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.paine.nativeApp.LoginActivity" android:theme="@style/AppTheme.Dark" />
+        <activity android:name="com.paine.nativeApp.SignupActivity" android:theme="@style/AppTheme.Dark" />
+        <activity android:name="com.paine.nativeApp.PreviewActivity" android:theme="@style/AppTheme.Dark"/>
+        <activity android:name="com.paine.nativeApp.CommentActivity" android:theme="@style/AppTheme"/>
+        <activity android:name="com.paine.nativeApp.UserActivity"/>
+        <activity android:name="com.paine.nativeApp.PmActivity"/>
+        <activity android:name="com.paine.nativeApp.SendPmActivity"/>
+
+    </application>
+
+</manifest>
