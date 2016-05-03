@@ -10,11 +10,14 @@ public class ImageModel implements Parcelable {
 
     String user_name, url, description, image_id, timestamp, distance,timeago, profile_pic;
 
+    Integer vote_count, user_vote;
+
     public ImageModel() {
 
     }
 
     protected ImageModel(Parcel in) {
+        vote_count = in.readInt();
         user_name = in.readString();
         url = in.readString();
         description = in.readString();
@@ -23,6 +26,7 @@ public class ImageModel implements Parcelable {
         distance = in.readString();
         timeago = in.readString();
         profile_pic = in.readString();
+        user_vote = in.readInt();
     }
 
     public static final Creator<ImageModel> CREATOR = new Creator<ImageModel>() {
@@ -36,6 +40,14 @@ public class ImageModel implements Parcelable {
             return new ImageModel[size];
         }
     };
+
+    public Integer getVotes(){return vote_count;}
+
+    public void setVotes(Integer v){ this.vote_count = v;}
+
+    public Integer getUserVote(){return user_vote;}
+
+    public void setUserVote(Integer v){this.user_vote = v;}
 
     public String getUserName() {
         return user_name;

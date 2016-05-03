@@ -70,6 +70,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     public void login() {
         Log.d(TAG, "Login");
 

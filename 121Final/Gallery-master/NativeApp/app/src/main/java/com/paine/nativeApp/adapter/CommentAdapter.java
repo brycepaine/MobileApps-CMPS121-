@@ -100,7 +100,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CustomVi
             customViewHolder.delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final Intent intent;
+
                     Log.i(LOG_TAG, "name clickd");
                     ((CommentActivity) mContext).DeleteComment(feedItem.getCommentId());
 

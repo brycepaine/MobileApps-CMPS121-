@@ -5,19 +5,23 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="primary">#E43F3F</color>
-    <color name="primary_dark">#E12929</color>
-    <color name="primary_darker">#CC1D1D</color>
+    <color name="primary">#3F51B5</color>
+    <color name="primary_dark">#303F9F</color>
+    <color name="primary_darker">#1d2c8e</color>
     <color name="accent">#FFFFFF</color>
 
     <color name="black">#000000</color>
     <color name="jet">#222222</color>
+    <color name="jet_light">#2e2e2e</color>
     <color name="oil">#333333</color>
+    <color name="darkgrey">#4b4b4b</color>
     <color name="monsoon">#777777</color>
     <color name="jumbo">#888888</color>
     <color name="aluminum">#999999</color>
     <color name="base">#AAAAAA</color>
     <color name="iron">#CCCCCC</color>
+    <color name="darkiron">#c9c7c7</color>
+    <color name="lightiron">#ece9e9</color>
     <color name="white">#FFFFFF</color>
 
 

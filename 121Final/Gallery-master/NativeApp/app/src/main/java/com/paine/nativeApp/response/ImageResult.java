@@ -35,6 +35,13 @@ public class ImageResult {
     @Expose
     private String profile_pic;
 
+    @SerializedName("vote_count")
+    @Expose
+    private Integer vote_count;
+
+    @SerializedName("user_vote")
+    @Expose
+    private Integer user_vote;
     /**
      *
      * @return
@@ -114,6 +121,14 @@ public class ImageResult {
     public void setTimeago(String a){this.ago = a;}
 
     public String getProfPic(){return profile_pic;}
+
+    public void setVoteCount(Integer a){this.vote_count=a;}
+
+    public Integer getVoteCount(){return vote_count;}
+
+    public Integer getUserVote(){return user_vote;}
+
+    public void setUserVote(Integer a){this.user_vote = a;}
 
 
 

@@ -31,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.paine.nativeApp.models.ImageModel;
+import com.paine.nativeApp.response.Example;
 import com.paine.nativeApp.response.ImageResult;
 import com.paine.nativeApp.response.ImageURLResponse;
 import com.paine.nativeApp.adapter.GalleryAdapter;
@@ -199,8 +200,9 @@ public class MainActivity extends AppCompatActivity {
 
         ImageURLService service = retrofit.create(ImageURLService.class);
 
+        Log.i(LOG_TAG, "the user_name is: " + user_name);
         Call<ImageURLResponse> queryResponseCall =
-                service.getURL(lat, lng);
+                service.getURL(lat, lng, user_name);
 
         //Call retrofit asynchronously
         queryResponseCall.enqueue(new Callback<ImageURLResponse>() {
@@ -219,9 +221,11 @@ public class MainActivity extends AppCompatActivity {
                     imageModel.setImageID(res.getImageId());
                     imageModel.setDistance(res.getDistance());
                     imageModel.setTimeago(res.getTimeago());
+                    imageModel.setVotes(res.getVoteCount());
+                    imageModel.setUserVote(res.getUserVote());
                     imageModel.setProfile("http://imagegallery.netai.net/pictures/" + res.getProfPic() + ".JPG");
-//                    Log.i(LOG_TAG, "image info list at :" + res + " username: " + res.getUserName()
-//                            + " URL : " + imageModel.getUrl() + "  description  " + res.getDescription());
+                    Log.i(LOG_TAG, "image info list at :" + res + " username: " + res.getUserName()
+                            + " URL : " + imageModel.getUrl() + "  description  " + res.getDescription());
 
                     mydata.add(imageModel);
                 }
@@ -242,7 +246,8 @@ public class MainActivity extends AppCompatActivity {
     public interface ImageURLService {
         @GET("default/get_images")
         Call<ImageURLResponse> getURL(@Query("lat") String lat,
-                                      @Query("lng") String lng);
+                                      @Query("lng") String lng,
+                                      @Query("user_name") String user_name);
     }
 
 
@@ -335,6 +340,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
+        if (id == R.id.inbox){
+            Intent intent = new Intent(this, PmActivity.class);
+            intent.putExtra("user_name", user_name);
+            startActivity(intent);
+        }
+
         if (id == R.id.action_take){
             clickpic();
 //            Log.i(LOG_TAG, "inside action take");
@@ -399,6 +410,49 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
+    public void Vote(String image_id, String vote) {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // set your desired log level
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://empirical-realm-123103.appspot.com/pictureApp/")    //We are using Foursquare API to get data
+                .addConverterFactory(GsonConverterFactory.create())    //parse Gson string
+                .client(httpClient)    //add logging
+                .build();
+
+        Call<Example> GetMessageCall;
+
+        Log.i(LOG_TAG, "the vote in main is " + vote);
+
+        if (vote.equals("up")) {
+            UpvoteService get_service = retrofit.create(UpvoteService.class);
+            GetMessageCall = get_service.upvote(user_name, image_id);
+            Log.i(LOG_TAG, "upvote in main");
+        } else{
+            DownvoteService get_service = retrofit.create(DownvoteService.class);
+            GetMessageCall = get_service.upvote(user_name, image_id);
+            Log.i(LOG_TAG, "downvote in main");
+        }
+        //Call retrofit asynchronously
+        GetMessageCall.enqueue(new Callback<Example>() {
+            @Override
+            public void onResponse(Response<Example> response) {
+                Log.i(LOG_TAG, "upvoted");
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                // Log error here since request failed
+            }
+        });
+    }
 
 
     /*
@@ -552,5 +606,16 @@ Request location update. This must be called in onResume if the user has allowed
         public void onProviderDisabled(String provider) {}
     };
 
+    public interface UpvoteService {
+        @GET("default/upvote")
+        Call<Example> upvote(@Query("user_name") String user_name,
+                             @Query("image_id" ) String image_id);
+    }
+
+    public interface DownvoteService {
+        @GET("default/downvote")
+        Call<Example> upvote(@Query("user_name") String user_name,
+                             @Query("image_id" ) String image_id);
+    }
 
 }

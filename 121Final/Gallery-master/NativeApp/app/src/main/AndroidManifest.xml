@@ -34,6 +34,7 @@
         <activity android:name="com.paine.nativeApp.UserActivity"/>
         <activity android:name="com.paine.nativeApp.PmActivity"/>
         <activity android:name="com.paine.nativeApp.SendPmActivity"/>
+        <activity android:name="com.paine.nativeApp.PmConversationActivity"/>
 
     </application>
 

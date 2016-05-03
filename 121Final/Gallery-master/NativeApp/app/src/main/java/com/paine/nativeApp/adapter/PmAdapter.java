@@ -1,14 +1,20 @@
 package com.paine.nativeApp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.paine.nativeApp.PmConversationActivity;
 import com.paine.nativeApp.models.PmModel;
 import com.paine.nativeApp.R;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -27,6 +33,7 @@ public class PmAdapter extends RecyclerView.Adapter<PmAdapter.CustomViewHolder> 
 
     private Context mContext;
     private List<PmModel> dataList;
+    private String from;
 
     public PmAdapter(Context context, List<PmModel> dataList) {
         this.mContext = context;
@@ -49,20 +56,36 @@ public class PmAdapter extends RecyclerView.Adapter<PmAdapter.CustomViewHolder> 
 
         final PmModel feedItem = dataList.get(i);
 
+        from = "From: " + feedItem.getUserName();
+
         customViewHolder.pm.setText(feedItem.getPm());
 
-        customViewHolder.name.setText(feedItem.getUserName());
+        customViewHolder.name.setText(from);
+
+        customViewHolder.time.setText(feedItem.getTimeago());
+
+        customViewHolder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent;
+                Log.i(LOG_TAG, "name clickd " + feedItem.getUserName());
+                intent = new Intent(mContext.getApplicationContext(), PmConversationActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("user_name", feedItem.getUserName());
+                mContext.startActivity(intent);
+            }
+        });
 
 
 
 
-
-//        customViewHolder.textView.setOnClickListener(new View.OnClickListener() {
+//
+//        customViewHolder.view.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
 //                final Intent intent;
 //                Log.i(LOG_TAG, "name clickd");
-//                intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
+//                intent = new Intent(mContext.getApplicationContext(), PmConversationActivity.class);
 //                intent.putExtra("user_name", feedItem.getUserName());
 //                mContext.startActivity(intent);
 //            }
@@ -97,6 +120,8 @@ public class PmAdapter extends RecyclerView.Adapter<PmAdapter.CustomViewHolder> 
 
         protected TextView pm;
         protected TextView name;
+        protected TextView time;
+        protected Button view;
 
 
         public CustomViewHolder(View view) {
@@ -104,6 +129,8 @@ public class PmAdapter extends RecyclerView.Adapter<PmAdapter.CustomViewHolder> 
 
             this.pm = (TextView) view.findViewById(R.id.pm);
             this.name = (TextView) view.findViewById(R.id.pm_from);
+            this.time = (TextView) view.findViewById(R.id.pm_time);
+            this.view = (Button) view.findViewById(R.id.view_conversation);
 
         }
     }
