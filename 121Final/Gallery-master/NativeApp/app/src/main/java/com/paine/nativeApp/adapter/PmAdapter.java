@@ -71,6 +71,7 @@ public class PmAdapter extends RecyclerView.Adapter<PmAdapter.CustomViewHolder> 
                 Log.i(LOG_TAG, "name clickd " + feedItem.getUserName());
                 intent = new Intent(mContext.getApplicationContext(), PmConversationActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Log.i(LOG_TAG, "on click username " + feedItem.getUserName());
                 intent.putExtra("user_name", feedItem.getUserName());
                 mContext.startActivity(intent);
             }
