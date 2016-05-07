@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.paine.nativeApp.PmActivity">
+
+    <item android:id="@+id/my_profile" android:title="My Profile"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/inbox" android:title="Inbox"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_upload" android:title="SignOut"
+        android:orderInCategory="100" app:showAsAction="never" />
+
+
+</menu>
