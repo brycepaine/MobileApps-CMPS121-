@@ -165,6 +165,10 @@ public class PmActivity extends AppCompatActivity{
                     userImageModel.setPm(res.getPm());
                     userImageModel.setUserName(res.getUserName());
                     userImageModel.setTimeago(res.getTimeago());
+                    userImageModel.setProf("http://imagegallery.netai.net/pictures/" + res.getProf() + ".JPG");
+                    Log.i(LOG_TAG, "THE PROFILE PIC : " + userImageModel.getProf());
+//                    imageModel.setProfile("http://imagegallery.netai.net/pictures/" + res.getProfPic() + ".JPG");
+
 //                    imageModel.setTimestamp(res.getTimestamp().toString());
 //                    imageModel.setDistance(res.getDistance());
 //                    imageModel.setTimeago(res.getTimeago());

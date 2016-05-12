@@ -8,7 +8,7 @@ import android.os.Parcelable;
  */
 public class PmModel implements Parcelable {
 
-    String user_name, pm, timeago;
+    String user_name, pm, timeago, profile_pic;
 
     public PmModel() {
 
@@ -18,6 +18,7 @@ public class PmModel implements Parcelable {
         user_name = in.readString();
         pm = in.readString();
         timeago = in.readString();
+        profile_pic = in.readString();
 
     }
 
@@ -52,6 +53,10 @@ public class PmModel implements Parcelable {
     public String getTimeago(){return timeago;}
 
     public void setTimeago(String t){this.timeago = t;}
+
+    public String getProf(){return profile_pic;}
+
+    public void setProf(String p){this.profile_pic = p;}
 
 
 

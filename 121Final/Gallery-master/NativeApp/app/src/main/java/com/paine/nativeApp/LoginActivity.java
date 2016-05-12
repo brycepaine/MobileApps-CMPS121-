@@ -35,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
     private String myUser_name;
     private String myPassword;
     private static String LOG_TAG = "MyApplication";
+    private Intent serviceIntent;
+
 
     @Bind(R.id.input_name)
     EditText _nameText;
@@ -50,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        
+
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -227,4 +229,5 @@ public class LoginActivity extends AppCompatActivity {
 
         return valid;
     }
+
 }

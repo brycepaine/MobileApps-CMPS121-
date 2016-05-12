@@ -1,5 +1,7 @@
 package com.paine.nativeApp.response;
 
+import android.util.Log;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -19,6 +21,9 @@ public class PmResult {
     @SerializedName("pm")
     @Expose
     private String pm;
+    @SerializedName("profile_pic")
+    @Expose
+    private String profile_pic;
 
     /**
      *
@@ -37,6 +42,17 @@ public class PmResult {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
+
+
+    public String getProf(){
+        Log.i("MyApplication", "profile in response is " + profile_pic);
+        return profile_pic;
+    }
+
+    public void setProf(String profile_pic){
+        this.profile_pic = profile_pic;
+    }
+
 
     /**
      *

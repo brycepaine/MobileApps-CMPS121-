@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.paine.nativeApp.CommentActivity;
 import com.paine.nativeApp.MainActivity;
+import com.paine.nativeApp.PmConversationActivity;
 import com.paine.nativeApp.models.ImageModel;
 import com.paine.nativeApp.R;
 import com.paine.nativeApp.SendPmActivity;
@@ -194,7 +195,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getTitle().equals("Send Message")) {
                             final Intent intent;
-                            intent = new Intent(mContext.getApplicationContext(), SendPmActivity.class);
+                            intent = new Intent(mContext.getApplicationContext(), PmConversationActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            Log.i(LOG_TAG, "on click username " + feedItem.getUserName());
                             intent.putExtra("user_name", feedItem.getUserName());
                             mContext.startActivity(intent);
 
@@ -213,8 +216,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
                             mContext.startActivity(intent);
 
                         }
-                        Toast.makeText(
-                                mContext.getApplicationContext(), "You clicked: " + item.getTitle(), Toast.LENGTH_LONG).show();
                         return true;
                     }
                 }));

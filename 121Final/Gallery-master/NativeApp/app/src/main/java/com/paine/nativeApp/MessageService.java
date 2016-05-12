@@ -2,11 +2,13 @@ package com.paine.nativeApp;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
-import com.parse.ParseUser;
 import com.sinch.android.rtc.ClientRegistration;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
@@ -21,18 +23,24 @@ public class MessageService extends Service implements SinchClientListener {
     private static final String APP_KEY = "2dc44e10-ab4c-45c8-be90-f5148ad27894";
     private static final String APP_SECRET = "7JlUQMtjUEScC7UUHhhomg==";
     private static final String ENVIRONMENT = "sandbox.sinch.com";
+    private static String LOG_TAG = "MyApplication";
+
 
     private final MessageServiceInterface serviceInterface = new MessageServiceInterface();
     private SinchClient sinchClient = null;
     private MessageClient messageClient = null;
     private String currentUserId;
     private LocalBroadcastManager broadcaster;
-    private Intent broadcastIntent = new Intent("com.sinch.messagingtutorial.app.ListUsersActivity");
+    private SharedPreferences settings;
+    private Intent broadcastIntent = new Intent("com.paine.Nativeapp.PmActivity");
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        currentUserId = ParseUser.getCurrentUser().getObjectId();
+        settings = PreferenceManager.getDefaultSharedPreferences(this);
+        currentUserId = settings.getString("user_name", null);
+        Log.i(LOG_TAG,"message service current user id " + currentUserId);
+
 
         if (currentUserId != null && !isSinchClientStarted()) {
             startSinchClient(currentUserId);
@@ -44,6 +52,7 @@ public class MessageService extends Service implements SinchClientListener {
     }
 
     public void startSinchClient(String username) {
+        Log.i(LOG_TAG,"startsinchclient");
         sinchClient = Sinch.getSinchClientBuilder().context(this).userId(username).applicationKey(APP_KEY)
                 .applicationSecret(APP_SECRET).environmentHost(ENVIRONMENT).build();
 
@@ -70,6 +79,7 @@ public class MessageService extends Service implements SinchClientListener {
 
     @Override
     public void onClientStarted(SinchClient client) {
+        Log.i(LOG_TAG,"onclientstarted");
         broadcastIntent.putExtra("success", true);
         broadcaster.sendBroadcast(broadcastIntent);
 
@@ -96,6 +106,7 @@ public class MessageService extends Service implements SinchClientListener {
     }
 
     public void sendMessage(String recipientUserId, String textBody) {
+        Log.i(LOG_TAG,"send message message service" + messageClient);
         if (messageClient != null) {
             WritableMessage message = new WritableMessage(recipientUserId, textBody);
             messageClient.send(message);

@@ -2,14 +2,20 @@ package com.paine.nativeApp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.paine.nativeApp.PmConversationActivity;
 import com.paine.nativeApp.models.PmModel;
 import com.paine.nativeApp.R;
@@ -46,25 +52,38 @@ public class PmAdapter extends RecyclerView.Adapter<PmAdapter.CustomViewHolder> 
 
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_pm, null);
 
-        CustomViewHolder viewHolder = new CustomViewHolder(view);
+        final CustomViewHolder viewHolder = new CustomViewHolder(view);
         return viewHolder;
 
     }
 
     @Override
-    public void onBindViewHolder(CustomViewHolder customViewHolder, final int i) {
+    public void onBindViewHolder(final CustomViewHolder customViewHolder, final int i) {
 
         final PmModel feedItem = dataList.get(i);
 
-        from = "From: " + feedItem.getUserName();
+
+//        Glide.with(mContext)
+//                .load(feedItem.getProf())
+//                .into(customViewHolder.profile_pic);
+        Glide.with(mContext).load(feedItem.getProf()).asBitmap().centerCrop().into(new BitmapImageViewTarget(customViewHolder.profile_pic) {
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable circularBitmapDrawable =
+                        RoundedBitmapDrawableFactory.create(mContext.getResources(), resource);
+                circularBitmapDrawable.setCircular(true);
+
+                customViewHolder.profile_pic.setImageDrawable(circularBitmapDrawable);
+            }
+        });
 
         customViewHolder.pm.setText(feedItem.getPm());
 
-        customViewHolder.name.setText(from);
+        customViewHolder.name.setText(feedItem.getUserName());
 
         customViewHolder.time.setText(feedItem.getTimeago());
 
-        customViewHolder.view.setOnClickListener(new View.OnClickListener() {
+        customViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Intent intent;
@@ -122,7 +141,7 @@ public class PmAdapter extends RecyclerView.Adapter<PmAdapter.CustomViewHolder> 
         protected TextView pm;
         protected TextView name;
         protected TextView time;
-        protected Button view;
+        protected ImageView profile_pic;
 
 
         public CustomViewHolder(View view) {
@@ -131,7 +150,8 @@ public class PmAdapter extends RecyclerView.Adapter<PmAdapter.CustomViewHolder> 
             this.pm = (TextView) view.findViewById(R.id.pm);
             this.name = (TextView) view.findViewById(R.id.pm_from);
             this.time = (TextView) view.findViewById(R.id.pm_time);
-            this.view = (Button) view.findViewById(R.id.view_conversation);
+            this.profile_pic = (ImageView) view.findViewById(R.id.profile);
+
 
         }
     }

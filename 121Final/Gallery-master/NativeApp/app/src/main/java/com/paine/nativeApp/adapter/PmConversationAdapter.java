@@ -2,14 +2,21 @@ package com.paine.nativeApp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.Image;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.paine.nativeApp.PmConversationActivity;
 import com.paine.nativeApp.models.PmModel;
 import com.paine.nativeApp.R;
@@ -36,6 +43,9 @@ public class PmConversationAdapter extends RecyclerView.Adapter<PmConversationAd
     private String from;
     private String user_name;
     private Integer count;
+    private final int ME = 1;
+    private final int YOU = 0;
+
 
 
     public PmConversationAdapter(Context context, List<PmModel> dataList, String user_name) {
@@ -49,16 +59,28 @@ public class PmConversationAdapter extends RecyclerView.Adapter<PmConversationAd
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view;
-
-
-
-        Log.i(LOG_TAG, "int i : " + count);
-        if(user_name.equals(dataList.get(count++).getUserName())){
+        Log.i(LOG_TAG, "i " + i);
+        if(i == ME){
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_pm_conversation_right, null);
-
         }else{
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_pm_conversation, null);
+//            Log.i(LOG_TAG, "not insed equal username " + dataList.get(count).getUserName() + " user " + user_name);
+
         }
+
+
+//
+//        Log.i(LOG_TAG, "int i : " + count  + " i + " + i + " user : " + dataList.get(count).getUserName() + "userloggedin " + user_name);
+//        if(user_name.equals(dataList.get(count).getUserName())){
+//            Log.i(LOG_TAG, "insed equal username " + dataList.get(count).getUserName() + " user " + user_name);
+//            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_pm_conversation_right, null);
+//
+//        }else{
+//            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_pm_conversation, null);
+//            Log.i(LOG_TAG, "not insed equal username " + dataList.get(count).getUserName() + " user " + user_name);
+//
+//        }
+
 
         CustomViewHolder viewHolder = new CustomViewHolder(view);
         return viewHolder;
@@ -66,7 +88,21 @@ public class PmConversationAdapter extends RecyclerView.Adapter<PmConversationAd
     }
 
     @Override
-    public void onBindViewHolder(CustomViewHolder customViewHolder, final int i) {
+    public int getItemViewType(int position) {
+        if (dataList.get(position).getUserName().equals(user_name)) {
+            return ME;
+        } else {
+            return YOU;
+        }
+
+    }
+
+    @Override
+    public void onBindViewHolder(final CustomViewHolder customViewHolder, final int i) {
+//        switch(customViewHolder.getItemViewType()){
+//            case ME:
+//                ViewHolder1 vh1 = (ViewHolder1) customViewHolder;
+//        }
 
         final PmModel feedItem = dataList.get(i);
 
@@ -74,9 +110,23 @@ public class PmConversationAdapter extends RecyclerView.Adapter<PmConversationAd
 
         customViewHolder.pm.setText(feedItem.getPm());
 
-        customViewHolder.name.setText(from);
 
         customViewHolder.time.setText(feedItem.getTimeago());
+
+        Log.i(LOG_TAG, " profile from conversation adapter " + feedItem.getProf());
+
+        Log.i(LOG_TAG, "right before crash feed item " + feedItem.getProf());
+
+        Glide.with(mContext).load(feedItem.getProf()).asBitmap().centerCrop().into(new BitmapImageViewTarget(customViewHolder.prof) {
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable circularBitmapDrawable =
+                        RoundedBitmapDrawableFactory.create(mContext.getResources(), resource);
+                circularBitmapDrawable.setCircular(true);
+
+                customViewHolder.prof.setImageDrawable(circularBitmapDrawable);
+            }
+        });
 
 
 
@@ -123,8 +173,8 @@ public class PmConversationAdapter extends RecyclerView.Adapter<PmConversationAd
 
 
         protected TextView pm;
-        protected TextView name;
         protected TextView time;
+        protected ImageView prof;
 
 
 
@@ -132,8 +182,8 @@ public class PmConversationAdapter extends RecyclerView.Adapter<PmConversationAd
             super(view);
 
             this.pm = (TextView) view.findViewById(R.id.pm);
-            this.name = (TextView) view.findViewById(R.id.pm_from);
             this.time = (TextView) view.findViewById(R.id.pm_time);
+            this.prof = (ImageView) view.findViewById(R.id.profile);
 
         }
     }

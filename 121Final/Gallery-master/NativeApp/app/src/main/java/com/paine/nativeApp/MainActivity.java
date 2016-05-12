@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private Uri imageUri;
     private SharedPreferences settings;
     private HashMap<String, Integer> spinnerHash = new HashMap<String, Integer>();
+    private Intent serviceIntent;
 
 
     @Override
@@ -79,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         refresh = false;
+        serviceIntent = new Intent(getApplicationContext(), MessageService.class);
+        startService(serviceIntent);
+
+
 //        Log.i(LOG_TAG, "refresh on create " + refresh);
 
 //        initialize spinner for mile radius
@@ -616,6 +621,12 @@ Request location update. This must be called in onResume if the user has allowed
         @GET("default/downvote")
         Call<Example> upvote(@Query("user_name") String user_name,
                              @Query("image_id" ) String image_id);
+    }
+
+    @Override
+    public void onDestroy() {
+        stopService(new Intent(this, MessageService.class));
+        super.onDestroy();
     }
 
 }

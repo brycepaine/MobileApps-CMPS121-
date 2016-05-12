@@ -1,6 +1,7 @@
 package com.paine.nativeApp;
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -59,6 +60,8 @@ public class SignupActivity extends AppCompatActivity {
 
 
     private static final String TAG = "SignupActivity";
+    final int PIC_CROP = 1;
+
 
 
     String user_name;
@@ -75,6 +78,7 @@ public class SignupActivity extends AppCompatActivity {
     private Uri imageUri;
     private String uploadImagestr;
     private SharedPreferences settings;
+    private Integer ImageWidth;
 
     private static String name;
 
@@ -96,6 +100,11 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        ImageWidth = size.x;
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -251,7 +260,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
     }
 
@@ -295,6 +304,38 @@ public class SignupActivity extends AppCompatActivity {
         return newBitmap;
     }
 
+    private void performCrop(Uri picUri) {
+        try {
+
+
+
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            // indicate image type and Uri
+            cropIntent.setDataAndType(picUri, "image/*");
+            // set crop properties
+            cropIntent.putExtra("crop", "true");
+            cropIntent.putExtra("circleCrop","true");
+            // indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 1);
+            cropIntent.putExtra("aspectY", 1);
+            // indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            Log.i(LOG_TAG,"IMAGE WIDTH " + ImageWidth);
+            cropIntent.putExtra("outputY", 256);
+            // retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            // start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, PIC_CROP);
+        }
+        // respond to users whose devices do not support the crop action
+        catch (ActivityNotFoundException anfe) {
+            // display an error message
+            String errorMessage = "Whoops - your device doesn't support the crop action!";
+            Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -303,47 +344,118 @@ public class SignupActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST
                 && resultCode == RESULT_OK && data != null) {
             imageUri = data.getData();
-
+            Bundle extras = data.getExtras();
+            // get the cropped bitmap
+            bitmap = extras.getParcelable("data");
 
 
             SecureRandomString srs = new SecureRandomString();
             image_id = srs.nextString();
 
             ImageView iv = (ImageView) findViewById(R.id.profile_image);
+//                iv.setImageBitmap(bitmap);
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
                 int width = size.x;
                 int height = size.y;
                 if (bitmap.getWidth() > width || bitmap.getHeight() > height) {
+                    Log.i(LOG_TAG,"scaledown");
                     bitmap = scaleDown(bitmap, width, true);
                 }
 
-                ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
-                int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-                Log.i(LOG_TAG, "orientation " + orientation);
 
-                switch(orientation) {
-                    case ExifInterface.ORIENTATION_ROTATE_90:
-                        bitmap = rotateImage(bitmap, 90);
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_180:
-                        bitmap = rotateImage(bitmap, 180);
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_270:
-                        bitmap = rotateImage(bitmap, 270);
-                        break;
 
-                    // etc.
-                }
+//                    ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
+//                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+//                    Log.i(LOG_TAG, "orientation " + orientation);
+//
+//                    switch(orientation) {
+//                        case ExifInterface.ORIENTATION_ROTATE_90:
+//                            bitmap = rotateImage(bitmap, 90);
+//                            break;
+//                        case ExifInterface.ORIENTATION_ROTATE_180:
+//                            bitmap = rotateImage(bitmap, 180);
+//                            break;
+//                        case ExifInterface.ORIENTATION_ROTATE_270:
+//                            bitmap = rotateImage(bitmap, 270);
+//                            break;
+
+                // etc.
+//                    }
+
                 iv.setImageBitmap(bitmap);
 
-            } catch (IOException e) {
+//                } catch () {
+//                    e.printStackTrace();
+            }catch (Exception e){
                 e.printStackTrace();
             }
+//            performCrop(imageUri);
         }
+
+        if (requestCode == PIC_CROP) {
+            if (data != null) {
+                Bundle extras = data.getExtras();
+                // get the cropped bitmap
+                bitmap = extras.getParcelable("data");
+
+
+                SecureRandomString srs = new SecureRandomString();
+                image_id = srs.nextString();
+
+                ImageView iv = (ImageView) findViewById(R.id.profile_image);
+//                iv.setImageBitmap(bitmap);
+                try {
+
+                    Display display = getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    int width = size.x;
+                    int height = size.y;
+                    if (bitmap.getWidth() > width || bitmap.getHeight() > height) {
+                        Log.i(LOG_TAG,"scaledown");
+                        bitmap = scaleDown(bitmap, width, true);
+                    }
+
+
+
+//                    ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
+//                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+//                    Log.i(LOG_TAG, "orientation " + orientation);
+//
+//                    switch(orientation) {
+//                        case ExifInterface.ORIENTATION_ROTATE_90:
+//                            bitmap = rotateImage(bitmap, 90);
+//                            break;
+//                        case ExifInterface.ORIENTATION_ROTATE_180:
+//                            bitmap = rotateImage(bitmap, 180);
+//                            break;
+//                        case ExifInterface.ORIENTATION_ROTATE_270:
+//                            bitmap = rotateImage(bitmap, 270);
+//                            break;
+
+                        // etc.
+//                    }
+
+                    iv.setImageBitmap(bitmap);
+
+//                } catch () {
+//                    e.printStackTrace();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+
+
+
+
+
 
 
         if(requestCode==TAKE_PIC_REQUEST &&resultCode==RESULT_OK&&data!=null) {
