@@ -135,12 +135,12 @@ public class UserActivity extends AppCompatActivity {
 //        if long or lat is null get location
         else if (lat == null && lng == null){
             requestLocationUpdate();
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
             setSupportActionBar(toolbar);
         }
         else {
 //            user is signed in and has location, get the images
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
             setSupportActionBar(toolbar);
             getImageURLs();
         }
@@ -208,7 +208,7 @@ public class UserActivity extends AppCompatActivity {
                 .client(httpClient)	//add logging
                 .build();
 
-        MainActivity.ImageURLService service = retrofit.create(MainActivity.ImageURLService.class);
+        MainFragment.ImageURLService service = retrofit.create(MainFragment.ImageURLService.class);
 
         Log.i(LOG_TAG, "the user_name is: " + user_name);
         Call<ImageURLResponse> queryResponseCall =
@@ -552,11 +552,11 @@ Request location update. This must be called in onResume if the user has allowed
         Log.i(LOG_TAG, "the vote in main is " + vote);
 
         if (vote.equals("up")) {
-            MainActivity.UpvoteService get_service = retrofit.create(MainActivity.UpvoteService.class);
+            MainFragment.UpvoteService get_service = retrofit.create(MainFragment.UpvoteService.class);
             GetMessageCall = get_service.upvote(user_name, image_id);
             Log.i(LOG_TAG, "upvote in user");
         } else{
-            MainActivity.DownvoteService get_service = retrofit.create(MainActivity.DownvoteService.class);
+            MainFragment.DownvoteService get_service = retrofit.create(MainFragment.DownvoteService.class);
             GetMessageCall = get_service.upvote(user_name, image_id);
             Log.i(LOG_TAG, "downvote in user");
         }

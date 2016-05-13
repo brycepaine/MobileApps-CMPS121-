@@ -11,8 +11,8 @@
         android:layout_height="?attr/actionBarSize"
         android:orientation="vertical">
         <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar" />
+            android:id="@+id/toolbar_profile"
+            layout="@layout/toolbar_profile" />
     </LinearLayout>
 
 

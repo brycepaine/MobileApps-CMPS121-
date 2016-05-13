@@ -4,10 +4,19 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.NavigationView;
+
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +24,7 @@ import android.view.View;
 //shobit find rest
 import android.Manifest;
 import android.content.Context;
+
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -24,21 +34,25 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.paine.nativeApp.models.ImageModel;
-import com.paine.nativeApp.response.Example;
-import com.paine.nativeApp.response.ImageResult;
-import com.paine.nativeApp.response.ImageURLResponse;
+import com.bumptech.glide.Glide;
+import com.paine.nativeApp.MainFragment;
 import com.paine.nativeApp.adapter.GalleryAdapter;
+import com.paine.nativeApp.models.ImageModel;
+import com.paine.nativeApp.response.ProfilePicResponse;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -48,8 +62,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+//import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
+
     private static String LOG_TAG = "MyApplication";
 
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
@@ -61,137 +79,108 @@ public class MainActivity extends AppCompatActivity {
     private GalleryAdapter adapter;
     private ProgressBar progressBar;
     private boolean refresh;
+    private String user_profile_pic;
+
+
     private LocationData locationData;
     private String lng;
     private String lat;
     private String user_name;
+    private String image_id;
+
     private Integer radius;
     private Integer theposition;
-    private Uri imageUri;
-    private SharedPreferences settings;
-    private HashMap<String, Integer> spinnerHash = new HashMap<String, Integer>();
-    private Intent serviceIntent;
 
+
+    private Uri imageUri;
+    private String uploadImagestr;
+
+    private SharedPreferences settings;
+
+    ArrayList<String> colorList;
+
+    private HashMap<String, Integer> spinnerHash = new HashMap<String, Integer>();
+    private String spinnerHashKey;
+
+
+    NavigationView navigationView = null;
+    Toolbar toolbar = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         Log.i(LOG_TAG, "on create");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activitymain_drawer);
         refresh = false;
-        serviceIntent = new Intent(getApplicationContext(), MessageService.class);
-        startService(serviceIntent);
-
-
-//        Log.i(LOG_TAG, "refresh on create " + refresh);
-
-//        initialize spinner for mile radius
+        Log.i(LOG_TAG, "refresh on create " + refresh);
         spinnerHash.put("5 Miles",0);
         spinnerHash.put("10 Miles", 1);
         spinnerHash.put("30 Miles", 2);
         spinnerHash.put("50 Miles", 3);
-    }
 
+        //Set the fragment initially
+        MainFragment fragment = new MainFragment();
+        android.support.v4.app.FragmentTransaction fragmentTransaction =
+                getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
 
-    @Override
-    protected void onResume(){
-//        Log.i(LOG_TAG, "on resume");
-//        Log.i(LOG_TAG, "refresh on resume " + refresh);
-
-
-        if(!refresh) {
-            locationData = LocationData.getLocationData();
-        }
-//     initialize refresh to false
-        refresh = false;
-
-//        shared preferences to get longitude and latitude and username if they exist
-        settings = PreferenceManager.getDefaultSharedPreferences(this);
-        lat = settings.getString("lat", null);
-        lng = settings.getString("lng", null);
-        user_name = settings.getString("user_name", null);
-//        Log.i(LOG_TAG, "radius on resume " + radius);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-//        Log.i(LOG_TAG, "on create user name: " + user_name + " lat: " + lat + lng);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
-//        if  user name is null sign in
-        if (user_name == null) {
-            Log.i(LOG_TAG,"switching to login intent");
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        settings = PreferenceManager.getDefaultSharedPreferences(this);
+        user_name = settings.getString("user_name", null);
+        image_id = settings.getString("image_id", null);
+        user_profile_pic = settings.getString("user_profile",null);
+        if(user_profile_pic == null ){
+            getProfilePic();
         }
 
-//        if long or lat is null get location
-        else if (lat == null && lng == null){
-            requestLocationUpdate();
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-        }
-        else {
-//            user is signed in and has location, get the images
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            getImageURLs();
-        }
 
-        super.onResume();
+        //How to change elements in the header programatically
+        View headerView = navigationView.getHeaderView(0);
+        TextView User_Name = (TextView) headerView.findViewById(R.id.username);
+        User_Name.setText(user_name);
 
-    }
-    protected void onPause(){
-        Log.i(LOG_TAG, "on pause");
-        removeLocationUpdate();
-        refresh = false;
+        ImageView Profile_Pic =
+                (ImageView) headerView.findViewById(R.id.profile_image);
 
-//        save long and lat
-        if(lat != null && lng != null && !refresh) {
-            settings = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor e = settings.edit();
-            e.putString("lat", lat);
-            e.putString("lng", lng);
-            e.commit();
-        }
+        Log.i(LOG_TAG, "IMAGE_ID!!!!!!!!!!!" + image_id);
+        Log.i(LOG_TAG, "http://imagegallery.netai.net/pictures/" + user_profile_pic + ".JPG");
 
-//        clear adapter data for memory
-        if (adapter != null){
-            adapter.clearData();
+        Glide.with(this)
+                .load("http://imagegallery.netai.net/pictures/" + user_profile_pic + ".JPG")
+                .into(Profile_Pic);
 
-        }
-
-//        Log.i(LOG_TAG, "onPause lat lng: " + lat + lng);
-        super.onPause();
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
+    private void setPic(){
+        View headerView = navigationView.getHeaderView(0);
 
-    private void loadImages(){
-        Log.i(LOG_TAG, "load images");
-
-        // urls have been called, end profressbar
-        progressBar.setVisibility(View.GONE);
-
-        //send data to adapter
-        adapter = new GalleryAdapter(MainActivity.this, mydata);
-        mRecyclerView.setAdapter(adapter);
-
+        ImageView Profile_Pic =
+                (ImageView) headerView.findViewById(R.id.profile_image);
+        Glide.with(this)
+                .load("http://imagegallery.netai.net/pictures/" + user_profile_pic + ".JPG")
+                .into(Profile_Pic);
     }
 
-
-    //retrofit call to get images and put them into image model
-    private void getImageURLs(){
-
-        removeLocationUpdate();
-//        Log.i(LOG_TAG, "get image urls");
-        setProgressBarIndeterminateVisibility(true);
-
-
+    private void getProfilePic(){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         // set your desired log level
+        setProgressBarIndeterminateVisibility(true);
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addInterceptor(logging)
@@ -203,38 +192,24 @@ public class MainActivity extends AppCompatActivity {
                 .client(httpClient)	//add logging
                 .build();
 
-        ImageURLService service = retrofit.create(ImageURLService.class);
+        ProfilePic service = retrofit.create(ProfilePic.class);
 
-        Log.i(LOG_TAG, "the user_name is: " + user_name);
-        Call<ImageURLResponse> queryResponseCall =
-                service.getURL(lat, lng, user_name);
+        Call<ProfilePicResponse> queryResponseCall =
+                service.getProfile(user_name);
 
         //Call retrofit asynchronously
-        queryResponseCall.enqueue(new Callback<ImageURLResponse>() {
+        queryResponseCall.enqueue(new Callback<ProfilePicResponse>() {
             @Override
-            public void onResponse(Response<ImageURLResponse> response) {
+            public void onResponse(Response<ProfilePicResponse> response) {
                 if (response.code() == 500) {
                     Log.e(LOG_TAG, "Error, please try again");
                 }
-                ArrayList<ImageResult> imageInfo = new ArrayList<ImageResult>(response.body().getImageResult());
-                for (int i = imageInfo.size()-1; i >= 0; i--) {
-                    ImageResult res = imageInfo.get(i);
-                    ImageModel imageModel = new ImageModel();
-                    imageModel.setUserName(res.getUserName());
-                    imageModel.setUrl("http://imagegallery.netai.net/pictures/" + res.getImageId() + ".JPG");
-                    imageModel.setDescription(res.getDescription());
-                    imageModel.setImageID(res.getImageId());
-                    imageModel.setDistance(res.getDistance());
-                    imageModel.setTimeago(res.getTimeago());
-                    imageModel.setVotes(res.getVoteCount());
-                    imageModel.setUserVote(res.getUserVote());
-                    imageModel.setProfile("http://imagegallery.netai.net/pictures/" + res.getProfPic() + ".JPG");
-                    Log.i(LOG_TAG, "image info list at :" + res + " username: " + res.getUserName()
-                            + " URL : " + imageModel.getUrl() + "  description  " + res.getDescription());
+                user_profile_pic = response.body().getProfilePic();
 
-                    mydata.add(imageModel);
-                }
-                loadImages();
+                setPic();
+
+
+
             }
 
 
@@ -245,27 +220,184 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    /**
-     * Foursquare api https://developer.foursquare.com/docs/venues/search
-     */
-    public interface ImageURLService {
-        @GET("default/get_images")
-        Call<ImageURLResponse> getURL(@Query("lat") String lat,
-                                      @Query("lng") String lng,
-                                      @Query("user_name") String user_name);
+
+    public interface ProfilePic {
+        @GET("default/get_profile_pic")
+        Call<ProfilePicResponse> getProfile(@Query("user_name") String user_name);
+
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+//        if (id == R.id.nav_homeslide) {
+//            //Set the fragment initially
+//            getFragmentManager().popBackStack();
+//
+//            MainFragment fragment = new MainFragment();
+//            android.support.v4.app.FragmentTransaction fragmentTransaction =
+//                    getSupportFragmentManager().beginTransaction();
+//            fragmentTransaction.replace(R.id.fragment_container, fragment);
+//            fragmentTransaction.commit();
+
+            // Handle the camera action
+        if (id == R.id.nav_upload) {
+            showFileChooser();
+
+        } else if (id == R.id.nav_camera) {
+            clickpic();
+            Log.i(LOG_TAG, "inside action take");
+
+        } else if (id == R.id.nav_myslide) {
+            //Set the fragment initially
+
+            getFragmentManager().popBackStack();
+
+//            MyPhoto fragment = new MyPhoto();
+//            android.support.v4.app.FragmentTransaction fragmentTransaction =
+//                    getSupportFragmentManager().beginTransaction();
+//            fragmentTransaction.replace(R.id.fragment_container, fragment);
+//            fragmentTransaction.commit();
+
+        } else if (id == R.id.nav_inbox) {
+            Intent intent = new Intent(this, PmActivity.class);
+            intent.putExtra("user_name", user_name);
+            startActivity(intent);
+        } else if (id == R.id.nav_logout) {
+            SharedPreferences.Editor e = settings.edit();
+            e.remove("user_name");
+            e.commit();
+            finish();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    protected void onPause(){
+        Log.i(LOG_TAG, "on pause");
+        removeLocationUpdate();
+        refresh = false;
+        if(lat != null && lng != null && !refresh) {
+            settings = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor e = settings.edit();
+            e.putString("lat", lat);
+            e.putString("lng", lng);
+            e.commit();
+        }
+        if (adapter != null){
+            adapter.clearData();
+        }
+        Log.i(LOG_TAG, "onPause lat lng: " + lat + lng);
+        super.onPause();
     }
 
 
+    private void loadImages(){
+        Log.i(LOG_TAG, "load images");
+        progressBar.setVisibility(View.GONE);
+        adapter = new GalleryAdapter(MainActivity.this, mydata);
+        mRecyclerView.setAdapter(adapter);
+        progressBar.setVisibility(View.GONE);
+    }
+//
+//    private void getImageURLs(){
+//
+//        removeLocationUpdate();
+//        Log.i(LOG_TAG, "get image urls");
+//        //setProgressBarIndeterminateVisibility(true);
+//
+//        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+//        // set your desired log level
+//        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        OkHttpClient httpClient = new OkHttpClient.Builder()
+//                .addInterceptor(logging)
+//                .build();
+//
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("https://empirical-realm-123103.appspot.com/pictureApp/")
+//                .addConverterFactory(GsonConverterFactory.create())	//parse Gson string
+//                .client(httpClient)	//add logging
+//                .build();
+//
+//        ImageURLService service = retrofit.create(ImageURLService.class);
+//
+//        Call<ImageURLResponse> queryResponseCall =
+//                service.getURL(lat, lng);
+//
+//        //Call retrofit asynchronously
+//        queryResponseCall.enqueue(new Callback<ImageURLResponse>() {
+//            @Override
+//            public void onResponse(Response<ImageURLResponse> response) {
+//                if (response.code() == 500) {
+//                    Log.e(LOG_TAG, "Error, please try again");
+//                }
+//                ArrayList<ImageResult> imageInfo = new ArrayList<ImageResult>(response.body().getImageResult());
+//                for (int i = imageInfo.size()-1; i >= 0; i--) {
+//                    ImageResult res = imageInfo.get(i);
+//                    //if image is within proximity to user's location, then display it here
+//                    ImageModel imageModel = new ImageModel();
+//                    imageModel.setUserName(res.getUserName());
+//                    imageModel.setUrl("http://imagegallery.netai.net/pictures/" + res.getImageId() + ".JPG");
+//                    imageModel.setDescription(res.getDescription());
+//                    imageModel.setImageID(res.getImageId());
+//                    imageModel.setTimestamp(res.getTimestamp().toString());
+//                    Log.i(LOG_TAG, "TIMESTAMP " + res.getTimestamp());
+//                    Log.i(LOG_TAG, "image info list at :" + res + " username: " + res.getUserName()
+//                            + " URL : " + imageModel.getUrl() + "  description  " + res.getDescription());
+//
+//                    mydata.add(imageModel);
+//                    Log.i(LOG_TAG, "the data is " + mydata);
+//                }
+//                loadImages();
+//                Log.i(LOG_TAG, "Code is: " + response.code());
+//                Log.i(LOG_TAG, "response " + response.body().getImageResult());
+//                progressBar.setVisibility(View.GONE);
+//            }
+//
+//
+//            @Override
+//            public void onFailure(Throwable t) {
+//                // Log error here since request failed
+//                Log.i(LOG_TAG, "throwable t: " + t);
+//            }
+//        });
+//
+//
+//
+//    }
+//    /**
+//     * Foursquare api https://developer.foursquare.com/docs/venues/search
+//     */
+//    public interface ImageURLService {
+//        @GET("default/get_images")
+//        Call<ImageURLResponse> getURL(@Query("lat") String lat,
+//                                      @Query("lng") String lng);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_detail, menu);
         MenuItem mSpinnerItem = menu.findItem(R.id.spinner);
-
-
-        //this is for the spinner mile radius.  it defaults to shared preference value
-        //or 5 if nothing has been saved
         View view = mSpinnerItem.getActionView();
         if (view instanceof Spinner)
         {
@@ -276,26 +408,23 @@ public class MainActivity extends AppCompatActivity {
 
             settings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
             radius = settings.getInt("spinner",5);
+
             theposition = spinnerHash.get(radius + " Miles");
-//            Log.i(LOG_TAG, "spinner hash position" + theposition + " radius:" + radius);
+            Log.i(LOG_TAG, "spinner hash position" + theposition + " radius:" + radius);
             spinner.setSelection(theposition);
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     Log.i(LOG_TAG, "spinner pos " + position);
 
-                    switch (position) {
-                        case 0:
-                            radius = 5;
+                    switch(position){
+                        case 0: radius = 5;
                             break;
-                        case 1:
-                            radius = 10;
+                        case 1: radius = 10;
                             break;
-                        case 2:
-                            radius = 30;
+                        case 2: radius = 30;
                             break;
-                        case 3:
-                            radius = 50;
+                        case 3: radius = 50;
                             break;
                     }
                     Log.i(LOG_TAG, "radius " + radius);
@@ -314,6 +443,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -321,48 +451,29 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-//this updates the users location and then refreshes the images
         if(id == R.id.refresh){
-            refresh = true;
-            SharedPreferences.Editor e = settings.edit();
-            e.putString("lat", null);
-            e.putString("lng", null);
-            e.commit();
-            Log.i(LOG_TAG, "lat after refresh should be null" + settings.getString("lat", null));
-            adapter.clearData();
-            progressBar.setVisibility(View.VISIBLE);
-            requestLocationUpdate();
+//            refresh = true;
+//            SharedPreferences.Editor e = settings.edit();
+//            e.putString("lat", null);
+//            e.putString("lng", null);
+//            e.commit();
+//            Log.i(LOG_TAG, "lat after refresh should be null" + settings.getString("lat", null));
+//            //adapter.clearData();
+//            //progressBar.setVisibility(View.VISIBLE);
+//            requestLocationUpdate();
+//            getImageURLs();
+//            loadImages();
+//            //adapter.notifyDataSetChanged();
+            //Set the fragment initially
 
-        }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_upload) {
-            showFileChooser();
-        }
+            getFragmentManager().popBackStack();
 
-        if (id == R.id.my_profile){
-            Intent intent = new Intent(this, UserActivity.class);
-            intent.putExtra("user_name", user_name);
-            startActivity(intent);
+            MainFragment fragment = new MainFragment();
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container, fragment);
+            fragmentTransaction.commit();
         }
-
-        if (id == R.id.inbox){
-            Intent intent = new Intent(this, PmActivity.class);
-            intent.putExtra("user_name", user_name);
-            startActivity(intent);
-        }
-
-        if (id == R.id.action_take){
-            clickpic();
-//            Log.i(LOG_TAG, "inside action take");
-        }
-        if (id == R.id.signout){
-            SharedPreferences.Editor e = settings.edit();
-            e.remove("user_name");
-            e.commit();
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -374,10 +485,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-// for taking picture
     private void clickpic() {
         // Check Camera
-//        Log.i(LOG_TAG, "click pick");
+        Log.i(LOG_TAG, "click pick");
         if (getApplicationContext().getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_CAMERA)) {
             // Open default camera
@@ -393,14 +503,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-// after uploading image from gallery or camera, go to preview acitivity to add description
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data!= null){
             imageUri = data.getData();
             Log.i(LOG_TAG, "imageURI: " + imageUri);
+            finish();
             Intent i = new Intent(this, PreviewActivity.class);
             i.putExtra("imageUri", imageUri.toString());
             startActivity(i);
@@ -409,55 +518,13 @@ public class MainActivity extends AppCompatActivity {
             Log.i(LOG_TAG, "thumbnail "  + data.getData() );
             imageUri = data.getData();
             Log.i(LOG_TAG, "imageURI: " + imageUri);
+            finish();
             Intent i = new Intent(this, PreviewActivity.class);
             i.putExtra("imageUri", imageUri.toString());
             startActivity(i);
         }
     }
 
-
-
-    public void Vote(String image_id, String vote) {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        // set your desired log level
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient httpClient = new OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://empirical-realm-123103.appspot.com/pictureApp/")    //We are using Foursquare API to get data
-                .addConverterFactory(GsonConverterFactory.create())    //parse Gson string
-                .client(httpClient)    //add logging
-                .build();
-
-        Call<Example> GetMessageCall;
-
-        Log.i(LOG_TAG, "the vote in main is " + vote);
-
-        if (vote.equals("up")) {
-            UpvoteService get_service = retrofit.create(UpvoteService.class);
-            GetMessageCall = get_service.upvote(user_name, image_id);
-            Log.i(LOG_TAG, "upvote in main");
-        } else{
-            DownvoteService get_service = retrofit.create(DownvoteService.class);
-            GetMessageCall = get_service.upvote(user_name, image_id);
-            Log.i(LOG_TAG, "downvote in main");
-        }
-        //Call retrofit asynchronously
-        GetMessageCall.enqueue(new Callback<Example>() {
-            @Override
-            public void onResponse(Response<Example> response) {
-                Log.i(LOG_TAG, "upvoted");
-
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                // Log error here since request failed
-            }
-        });
-    }
 
 
     /*
@@ -591,7 +658,7 @@ Request location update. This must be called in onResume if the user has allowed
                 if(!refresh){
                     Log.i(LOG_TAG, "Not REFRESH");
                 }else Log.i(LOG_TAG, "REFRESH");
-                getImageURLs();
+//                getImageURLs();
 
 
 //                //Now we have the location.
@@ -611,22 +678,5 @@ Request location update. This must be called in onResume if the user has allowed
         public void onProviderDisabled(String provider) {}
     };
 
-    public interface UpvoteService {
-        @GET("default/upvote")
-        Call<Example> upvote(@Query("user_name") String user_name,
-                             @Query("image_id" ) String image_id);
-    }
-
-    public interface DownvoteService {
-        @GET("default/downvote")
-        Call<Example> upvote(@Query("user_name") String user_name,
-                             @Query("image_id" ) String image_id);
-    }
-
-    @Override
-    public void onDestroy() {
-        stopService(new Intent(this, MessageService.class));
-        super.onDestroy();
-    }
 
 }

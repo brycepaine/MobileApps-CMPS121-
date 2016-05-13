@@ -64,6 +64,7 @@ public class PmConversationActivity extends AppCompatActivity{
     private MessageService.MessageServiceInterface messageService;
     private ServiceConnection serviceConnection = new MyServiceConnection();
     private MessageClientListener messageClientListener = new MyMessageClientListener();
+    private String profile_pic;
 
 
 
@@ -85,6 +86,7 @@ public class PmConversationActivity extends AppCompatActivity{
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         user_name = settings.getString("user_name", null);
+        profile_pic = settings.getString("user_profile",null);
 
         getMessages();
 
@@ -103,7 +105,7 @@ public class PmConversationActivity extends AppCompatActivity{
 //        linearLayoutManager.setReverseLayout(true);
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
         setSupportActionBar(toolbar);
 
         thePm = (EditText) findViewById(R.id.messageBodyField);
@@ -398,6 +400,8 @@ public class PmConversationActivity extends AppCompatActivity{
 //
             userImageModel.setPm(message.getTextBody());
             userImageModel.setUserName(user_name);
+            Log.i(LOG_TAG, "on message sent profile " + profile_pic);
+            userImageModel.setProf("http://imagegallery.netai.net/pictures/" + profile_pic + ".JPG");
             userImageModel.setTimeago("Now");
 ////                    imageModel.setTimestamp(res.getTimestamp().toString());
 ////                    imageModel.setDistance(res.getDistance());

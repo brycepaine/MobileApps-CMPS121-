@@ -196,7 +196,9 @@ public class SignupActivity extends AppCompatActivity {
                     onSignupSuccess();
 //                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
                     SharedPreferences.Editor e = settings.edit();
+                    Log.i(LOG_TAG, "name and image id at signup " + name + image_id);
                     e.putString("user_name", name);
+                    e.putString("user_profile",image_id);
                     e.commit();
 
                 }else onSignupFailed();
@@ -393,7 +395,7 @@ public class SignupActivity extends AppCompatActivity {
             }catch (Exception e){
                 e.printStackTrace();
             }
-//            performCrop(imageUri);
+            performCrop(imageUri);
         }
 
         if (requestCode == PIC_CROP) {

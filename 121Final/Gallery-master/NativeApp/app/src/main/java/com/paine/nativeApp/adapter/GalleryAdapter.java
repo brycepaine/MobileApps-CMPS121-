@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.paine.nativeApp.CommentActivity;
 import com.paine.nativeApp.MainActivity;
+import com.paine.nativeApp.MainFragment;
 import com.paine.nativeApp.PmConversationActivity;
 import com.paine.nativeApp.models.ImageModel;
 import com.paine.nativeApp.R;
@@ -133,32 +134,33 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
         });
 
 
+//     FIX THIS
+//        customViewHolder.downvote.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                customViewHolder.downvote.setColorFilter(Color.argb(255, 165, 42, 42));
+//                customViewHolder.upvote.setColorFilter(Color.argb(255, 29, 29, 29));
+//                customViewHolder.votecount.setText(Integer.toString(feedItem.getVotes() - 1));
+//                Log.i(LOG_TAG, "name clickd");
+//                ((MainActivity) mContext).Vote(feedItem.getImageID(), "down");
+//
+//
+//            }
+//        });
 
-        customViewHolder.downvote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                customViewHolder.downvote.setColorFilter(Color.argb(255, 165, 42, 42));
-                customViewHolder.upvote.setColorFilter(Color.argb(255, 29, 29, 29));
-                customViewHolder.votecount.setText(Integer.toString(feedItem.getVotes() - 1));
-                Log.i(LOG_TAG, "name clickd");
-                ((MainActivity) mContext).Vote(feedItem.getImageID(), "down");
-
-
-            }
-        });
-
-        customViewHolder.upvote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                customViewHolder.upvote.setColorFilter(Color.argb(255, 0, 0, 128));
-                customViewHolder.downvote.setColorFilter(Color.argb(255, 29, 29, 29));
-                customViewHolder.votecount.setText(Integer.toString(feedItem.getVotes() + 1));
-                Log.i(LOG_TAG, "name clickd");
-                ((MainActivity) mContext).Vote(feedItem.getImageID(),"up");
-
-
-            }
-        });
+//        FIX THIS
+//        customViewHolder.upvote.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                customViewHolder.upvote.setColorFilter(Color.argb(255, 0, 0, 128));
+//                customViewHolder.downvote.setColorFilter(Color.argb(255, 29, 29, 29));
+//                customViewHolder.votecount.setText(Integer.toString(feedItem.getVotes() + 1));
+//                Log.i(LOG_TAG, "name clickd");
+//                ((MainFragment) mContext).Vote(feedItem.getImageID(), "up");
+//
+//
+//            }
+//        });
 
         customViewHolder.textView.setOnClickListener(new View.OnClickListener() {
             @Override

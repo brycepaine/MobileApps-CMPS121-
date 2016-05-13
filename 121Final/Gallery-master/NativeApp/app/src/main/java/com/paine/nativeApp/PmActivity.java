@@ -3,6 +3,7 @@ package com.paine.nativeApp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,6 +51,7 @@ public class PmActivity extends AppCompatActivity{
 
     private Integer radius;
     private Integer theposition;
+    private String profile_image;
 
     private SharedPreferences settings;
 
@@ -62,14 +64,25 @@ public class PmActivity extends AppCompatActivity{
         Log.i(LOG_TAG, "on resume");
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
+
         Intent i = getIntent();
         user_name = i.getStringExtra("user_name");
+
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_2);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         getImageURLs();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
 
     }
