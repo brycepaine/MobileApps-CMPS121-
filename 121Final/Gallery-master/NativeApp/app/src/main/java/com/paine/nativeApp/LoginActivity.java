@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private String myPassword;
     private static String LOG_TAG = "MyApplication";
     private Intent serviceIntent;
+    private String profile_id;
 
 
     @Bind(R.id.input_name)
@@ -123,6 +124,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Response<LoginResponse> response) {
                 Log.i(TAG, "Code is: " + response.code());
                 Log.i(TAG, "The result is: " + response.body().response);
+                profile_id = response.body().profile_pic;
                 if(response.body().response.equals("user_not_registered")){
                     login_flag = "reg";
                    // onLoginFailed();
@@ -161,6 +163,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
@@ -193,6 +197,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor e = settings.edit();
         e.putString("user_name", myUser_name);
+        e.putString("user_profile",profile_id);
         Log.i(LOG_TAG, "onLoginSuccess username: " + myUser_name);
         e.commit();
 

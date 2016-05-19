@@ -8,7 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:listDivider">@color/text_black_divider_12</item>
+
+
     </style>
+
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

@@ -62,7 +62,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-//import de.hdodenhof.circleimageview.CircleImageView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity
@@ -140,13 +140,12 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
+
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         user_name = settings.getString("user_name", null);
         image_id = settings.getString("image_id", null);
         user_profile_pic = settings.getString("user_profile",null);
-        if(user_profile_pic == null ){
-            getProfilePic();
-        }
+
 
 
         //How to change elements in the header programatically
@@ -154,8 +153,8 @@ public class MainActivity extends AppCompatActivity
         TextView User_Name = (TextView) headerView.findViewById(R.id.username);
         User_Name.setText(user_name);
 
-        ImageView Profile_Pic =
-                (ImageView) headerView.findViewById(R.id.profile_image);
+        CircleImageView Profile_Pic =
+                (CircleImageView) headerView.findViewById(R.id.profile_image);
 
         Log.i(LOG_TAG, "IMAGE_ID!!!!!!!!!!!" + image_id);
         Log.i(LOG_TAG, "http://imagegallery.netai.net/pictures/" + user_profile_pic + ".JPG");
@@ -165,68 +164,6 @@ public class MainActivity extends AppCompatActivity
                 .into(Profile_Pic);
 
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    private void setPic(){
-        View headerView = navigationView.getHeaderView(0);
-
-        ImageView Profile_Pic =
-                (ImageView) headerView.findViewById(R.id.profile_image);
-        Glide.with(this)
-                .load("http://imagegallery.netai.net/pictures/" + user_profile_pic + ".JPG")
-                .into(Profile_Pic);
-    }
-
-    private void getProfilePic(){
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        // set your desired log level
-        setProgressBarIndeterminateVisibility(true);
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient httpClient = new OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://empirical-realm-123103.appspot.com/pictureApp/")
-                .addConverterFactory(GsonConverterFactory.create())	//parse Gson string
-                .client(httpClient)	//add logging
-                .build();
-
-        ProfilePic service = retrofit.create(ProfilePic.class);
-
-        Call<ProfilePicResponse> queryResponseCall =
-                service.getProfile(user_name);
-
-        //Call retrofit asynchronously
-        queryResponseCall.enqueue(new Callback<ProfilePicResponse>() {
-            @Override
-            public void onResponse(Response<ProfilePicResponse> response) {
-                if (response.code() == 500) {
-                    Log.e(LOG_TAG, "Error, please try again");
-                }
-                user_profile_pic = response.body().getProfilePic();
-
-                setPic();
-
-
-
-            }
-
-
-            @Override
-            public void onFailure(Throwable t) {
-                // Log error here since request failed
-                Log.i(LOG_TAG, "throwable t: " + t);
-            }
-        });
-    }
-
-    public interface ProfilePic {
-        @GET("default/get_profile_pic")
-        Call<ProfilePicResponse> getProfile(@Query("user_name") String user_name);
-
-
-
     }
 
     @Override
@@ -281,6 +218,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             SharedPreferences.Editor e = settings.edit();
             e.remove("user_name");
+            e.remove("user_profile");
             e.commit();
             finish();
             Intent intent = new Intent(this, LoginActivity.class);

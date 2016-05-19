@@ -13,4 +13,7 @@ public class LoginResponse {
     @SerializedName("name")
     @Expose
     public String name;
+    @SerializedName("profile_pic")
+    @Expose
+    public String profile_pic;
 }

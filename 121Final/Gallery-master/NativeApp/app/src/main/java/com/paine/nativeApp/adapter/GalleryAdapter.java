@@ -31,6 +31,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by Suleiman19 on 10/22/15.
  */
@@ -259,7 +261,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
         protected TextView distance;
         protected TextView descriptionView;
         protected TextView time;
-        protected ImageView profile;
+        protected CircleImageView profile;
         protected ImageButton upvote;
         protected ImageButton downvote;
         protected ImageButton comments;
@@ -276,7 +278,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
             this.textView = (TextView) view.findViewById(R.id.username);
             this.distance = (TextView) view.findViewById(R.id.miles_away);
             this.time = (TextView) view.findViewById(R.id.timestamp);
-            this.profile = (ImageView) view.findViewById(R.id.prof_pic);
+            this.profile = (CircleImageView) view.findViewById(R.id.prof_pic);
             this.upvote = (ImageButton) view.findViewById(R.id.upvote_arrow);
             this.downvote = (ImageButton) view.findViewById(R.id.downvote_arrow);
             this.comments = (ImageButton) view.findViewById(R.id.comment_btn);

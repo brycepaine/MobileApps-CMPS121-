@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_inbox" android:icon="@android:drawable/ic_menu_share"
+    <group android:checkableBehavior="single" android:id="@+id/main" >
+        <item android:id="@+id/nav_inbox" android:icon="@drawable/ic_email_black_24dp"
             android:title="Inbox" />
 
-        <item android:id="@+id/nav_myslide" android:icon="@android:drawable/ic_menu_gallery"
-            android:title="MySlide" />
+        <item android:id="@+id/nav_myslide" android:icon="@drawable/ic_perm_identity_black_24dp"
+            android:title="My Profile" />
 
-        <item android:id="@+id/local_chat" android:icon="@android:drawable/ic_menu_gallery"
+        <item android:id="@+id/local_chat" android:icon="@drawable/ic_chat_black_24dp"
             android:title="Local Chat" />
 
     </group>
-    <group>
+    <group android:id="@+id/upload" android:checkableBehavior="single" >
 
-        <item android:id="@+id/nav_upload" android:icon="@android:drawable/ic_menu_share"
+        <item android:id="@+id/nav_upload" android:icon="@drawable/ic_file_upload_black_24dp"
             android:title="Import" />
 
-        <item android:id="@+id/nav_camera" android:icon="@android:drawable/ic_menu_camera"
+        <item android:id="@+id/nav_camera" android:icon="@drawable/ic_photo_camera_black_24dp"
             android:title="Camera" />
     </group>
 
 
 
-    <group>
+    <group android:id="@+id/logout">
 
-        <item android:id="@+id/nav_logout" android:icon="@android:drawable/ic_delete"
+        <item android:id="@+id/nav_logout" android:icon="@drawable/ic_close_black_24dp"
             android:title="Logout" />
     </group>
 
