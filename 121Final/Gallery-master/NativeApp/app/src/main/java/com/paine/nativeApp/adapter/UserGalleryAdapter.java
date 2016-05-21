@@ -92,29 +92,29 @@ public class UserGalleryAdapter extends RecyclerView.Adapter<UserGalleryAdapter.
         Log.i(LOG_TAG, "votecount " + feedItem.getVotes());
         customViewHolder.votecount.setText(Integer.toString(feedItem.getVotes()));
 
-        customViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent intent;
-                Log.i(LOG_TAG, "image view clickd");
-                intent = new Intent(mContext.getApplicationContext(), CommentActivity.class);
-                intent.putExtra("image_id", feedItem.getImageID());
-                intent.putExtra("user_name", feedItem.getUserName());
-                mContext.startActivity(intent);
-            }
-        });
+//        customViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final Intent intent;
+//                Log.i(LOG_TAG, "image view clickd");
+//                intent = new Intent(mContext.getApplicationContext(), CommentActivity.class);
+//                intent.putExtra("image_id", feedItem.getImageID());
+//                intent.putExtra("user_name", feedItem.getUserName());
+//                mContext.startActivity(intent);
+//            }
+//        });
 
 
-        customViewHolder.profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent intent;
-                Log.i(LOG_TAG, "profile clickd");
-                intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
-                intent.putExtra("user_name", feedItem.getUserName());
-                mContext.startActivity(intent);
-            }
-        });
+//        customViewHolder.profile.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final Intent intent;
+//                Log.i(LOG_TAG, "profile clickd");
+//                intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
+//                intent.putExtra("user_name", feedItem.getUserName());
+//                mContext.startActivity(intent);
+//            }
+//        });
 
 
 
@@ -144,59 +144,71 @@ public class UserGalleryAdapter extends RecyclerView.Adapter<UserGalleryAdapter.
             }
         });
 
-        customViewHolder.textView.setOnClickListener(new View.OnClickListener() {
+        customViewHolder.comments.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Intent intent;
-                Log.i(LOG_TAG, "name clickd");
-                intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
+                Log.i(LOG_TAG, "comment btn clickd");
+                intent = new Intent(mContext.getApplicationContext(), CommentActivity.class);
+                intent.putExtra("image_id", feedItem.getImageID());
                 intent.putExtra("user_name", feedItem.getUserName());
                 mContext.startActivity(intent);
             }
         });
 
-        customViewHolder.more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(LOG_TAG, "clicked menu more");
-                PopupMenu popup = new PopupMenu(mContext.getApplicationContext(), customViewHolder.more);
+//        customViewHolder.textView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final Intent intent;
+//                Log.i(LOG_TAG, "name clickd");
+//                intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
+//                intent.putExtra("user_name", feedItem.getUserName());
+//                mContext.startActivity(intent);
+//            }
+//        });
 
-                popup.getMenuInflater()
-                        .inflate(R.menu.more_menu, popup.getMenu());
-
-                popup.setOnMenuItemClickListener((new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getTitle().equals("Send Message")) {
-                            final Intent intent;
-                            intent = new Intent(mContext.getApplicationContext(), SendPmActivity.class);
-                            intent.putExtra("user_name", feedItem.getUserName());
-                            mContext.startActivity(intent);
-
-                        } else if (item.getTitle().equals("View Profile")) {
-                            final Intent intent;
-                            Log.i(LOG_TAG, "profile clickd");
-                            intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
-                            intent.putExtra("user_name", feedItem.getUserName());
-                            mContext.startActivity(intent);
-                        } else if (item.getTitle().equals("Comment")) {
-                            final Intent intent;
-                            Log.i(LOG_TAG, "comment btn clickd");
-                            intent = new Intent(mContext.getApplicationContext(), CommentActivity.class);
-                            intent.putExtra("image_id", feedItem.getImageID());
-                            intent.putExtra("user_name", feedItem.getUserName());
-                            mContext.startActivity(intent);
-
-                        }
-                        Toast.makeText(
-                                mContext.getApplicationContext(), "You clicked: " + item.getTitle(), Toast.LENGTH_LONG).show();
-                        return true;
-                    }
-                }));
-
-                popup.show();
-            }
-        });
+//        customViewHolder.more.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.i(LOG_TAG, "clicked menu more");
+//                PopupMenu popup = new PopupMenu(mContext.getApplicationContext(), customViewHolder.more);
+//
+//                popup.getMenuInflater()
+//                        .inflate(R.menu.more_menu, popup.getMenu());
+//
+//                popup.setOnMenuItemClickListener((new PopupMenu.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        if (item.getTitle().equals("Send Message")) {
+//                            final Intent intent;
+//                            intent = new Intent(mContext.getApplicationContext(), SendPmActivity.class);
+//                            intent.putExtra("user_name", feedItem.getUserName());
+//                            mContext.startActivity(intent);
+//
+//                        } else if (item.getTitle().equals("View Profile")) {
+//                            final Intent intent;
+//                            Log.i(LOG_TAG, "profile clickd");
+//                            intent = new Intent(mContext.getApplicationContext(), UserActivity.class);
+//                            intent.putExtra("user_name", feedItem.getUserName());
+//                            mContext.startActivity(intent);
+//                        } else if (item.getTitle().equals("Comment")) {
+//                            final Intent intent;
+//                            Log.i(LOG_TAG, "comment btn clickd");
+//                            intent = new Intent(mContext.getApplicationContext(), CommentActivity.class);
+//                            intent.putExtra("image_id", feedItem.getImageID());
+//                            intent.putExtra("user_name", feedItem.getUserName());
+//                            mContext.startActivity(intent);
+//
+//                        }
+//                        Toast.makeText(
+//                                mContext.getApplicationContext(), "You clicked: " + item.getTitle(), Toast.LENGTH_LONG).show();
+//                        return true;
+//                    }
+//                }));
+//
+//                popup.show();
+//            }
+//        });
 
 
 
@@ -253,7 +265,7 @@ public class UserGalleryAdapter extends RecyclerView.Adapter<UserGalleryAdapter.
             this.upvote = (ImageButton) view.findViewById(R.id.upvote_arrow);
             this.downvote = (ImageButton) view.findViewById(R.id.downvote_arrow);
             this.comments = (ImageButton) view.findViewById(R.id.comment_btn);
-            this.more = (ImageButton) view.findViewById(R.id.more_options);
+//            this.more = (ImageButton) view.findViewById(R.id.more_options);
             this.votecount = (TextView) view.findViewById(R.id.vote_count);
         }
     }

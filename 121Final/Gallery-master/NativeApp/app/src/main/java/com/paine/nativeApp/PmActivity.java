@@ -111,8 +111,8 @@ public class PmActivity extends AppCompatActivity{
 
 
 
-        if (id == R.id.inbox){
-            Intent intent = new Intent(this, PmActivity.class);
+        if (id == R.id.home){
+            Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("user_name", user_name);
             startActivity(intent);
         }

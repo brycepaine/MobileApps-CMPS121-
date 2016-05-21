@@ -2,10 +2,12 @@
 <ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/darkiron"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:paddingTop="75dp"
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/btn_upload"
@@ -21,12 +23,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/imageView"
-            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
         <EditText
             android:layout_width="200dp"
+            android:hint="description.. (optional)"
             android:layout_height="wrap_content"
+            android:textColorHint="@color/monsoon"
+            android:textColor="@color/jet"
             android:id="@+id/editText"
             android:layout_below="@+id/imageView"
             android:layout_centerHorizontal="true" />

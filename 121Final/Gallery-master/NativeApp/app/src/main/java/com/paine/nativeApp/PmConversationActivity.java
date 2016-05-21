@@ -12,6 +12,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,6 +83,17 @@ public class PmConversationActivity extends AppCompatActivity{
         setContentView(R.layout.activity_pm_conversation);
         bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         Intent i = getIntent();
         user_to = i.getStringExtra("user_name");
 
@@ -91,6 +104,44 @@ public class PmConversationActivity extends AppCompatActivity{
         getMessages();
 
         Log.i(LOG_TAG, "user_name user_to" + user_name + user_to);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_conversation, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+//this updates the users location and then refreshes the images
+
+
+        if (id == R.id.home){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("user_name", user_name);
+            startActivity(intent);
+        }
+
+
+
+
+
+        if (id == R.id.signout){
+            SharedPreferences.Editor e = settings.edit();
+            e.remove("user_name");
+            e.commit();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

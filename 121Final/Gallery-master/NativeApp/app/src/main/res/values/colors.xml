@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimary">#1f4658</color>
     <color name="colorPrimaryDark">#00303f9f</color>
     <color name="colorAccent">#FF4081</color>
 
@@ -57,5 +57,19 @@
     <color name="text_black_divider_12">#1F000000</color>
 
     <color name="text_white_text_icons_100">#FFFFFF</color>
+
+
+    <!--style color test-->
+    <color name="test">#9e4d4d</color>
+    <color name="testt">#4d9e6f</color>
+    <color name="testtt">#e75454</color>
+    <color name="testttt">#ff7c82</color>
+    <color name="testtttt">#33a4b1</color>
+    <color name="testttttt">#217c52</color>
+    <color name="testtttttt">#ff5050</color>
+    <color name="background_material_dark">#005e75</color>
+    <color name="primary_material_dark">#0a3f5e</color>
+    <color name="accent_material_dark">#46a97d</color>
+
 
 </resources>

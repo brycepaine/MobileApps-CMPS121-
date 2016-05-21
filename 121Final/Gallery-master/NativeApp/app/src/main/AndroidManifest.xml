@@ -32,8 +32,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.paine.nativeApp.LoginActivity" android:theme="@style/AppTheme.Dark" />
-        <activity android:name="com.paine.nativeApp.SignupActivity" android:theme="@style/AppTheme.Dark" />
+        <activity android:name="com.paine.nativeApp.LoginActivity" android:theme="@style/login" />
+        <activity android:name="com.paine.nativeApp.SignupActivity" android:theme="@style/login" />
         <activity android:name="com.paine.nativeApp.PreviewActivity" android:theme="@style/AppTheme.Dark"/>
         <activity android:name="com.paine.nativeApp.CommentActivity" android:theme="@style/AppTheme"/>
         <activity android:name="com.paine.nativeApp.UserActivity"/>

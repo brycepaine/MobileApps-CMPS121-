@@ -92,8 +92,8 @@ public class SignupActivity extends AppCompatActivity {
     TextView _loginLink;
     @Bind(R.id.profile_btn_upload)
     Button profile_btn_upload;
-    @Bind(R.id.profile_btn_take)
-    Button take_profile;
+//    @Bind(R.id.profile_btn_take)
+//    Button take_profile;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,12 +131,12 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
-        take_profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickpic();
-            }
-        });
+//        take_profile.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                clickpic();
+//            }
+//        });
     }
 
     public void signup() {

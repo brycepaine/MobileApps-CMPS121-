@@ -203,7 +203,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_myslide) {
             //Set the fragment initially
 
-            getFragmentManager().popBackStack();
+            Intent intent = new Intent(this, UserActivity.class);
+            intent.putExtra("user_name", user_name);
+            startActivity(intent);
+
 
 //            MyPhoto fragment = new MyPhoto();
 //            android.support.v4.app.FragmentTransaction fragmentTransaction =

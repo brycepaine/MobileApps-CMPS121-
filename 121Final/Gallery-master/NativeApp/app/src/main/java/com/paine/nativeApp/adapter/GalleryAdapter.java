@@ -3,6 +3,7 @@ package com.paine.nativeApp.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.StrictMode;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,6 +51,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
 
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites().detectNetwork().penaltyLog().build());
+
 
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, null);
 
@@ -69,6 +72,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
 
         Glide.with(mContext)
                 .load(feedItem.getProfile())
+                .dontAnimate()
+                .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(customViewHolder.profile);
 
 

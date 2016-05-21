@@ -86,6 +86,7 @@ public class UserActivity extends AppCompatActivity {
         refresh = false;
 //        Log.i(LOG_TAG, "refresh on create " + refresh);
 
+
     }
 
 
@@ -137,11 +138,27 @@ public class UserActivity extends AppCompatActivity {
             requestLocationUpdate();
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
             setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
         }
         else {
 //            user is signed in and has location, get the images
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
             setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
             getImageURLs();
         }
 
@@ -286,7 +303,11 @@ public class UserActivity extends AppCompatActivity {
 //this updates the users location and then refreshes the images
 
 
-
+        if (id == R.id.home){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("user_name", user_name);
+            startActivity(intent);
+        }
 
         if (id == R.id.inbox){
             Intent intent = new Intent(this, PmActivity.class);
@@ -294,18 +315,8 @@ public class UserActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
-        if(id ==R.id.send_message){
-            Intent intent = new Intent(this, SendPmActivity.class);
-            intent.putExtra("user_name", userProfile);
-            startActivity(intent);
-        }
 
-       if(id ==R.id.my_profile){
-           Intent intent = new Intent(this, UserActivity.class);
-           intent.putExtra("user_name",user_name);
-           startActivity(intent);
 
-       }
         if (id == R.id.signout){
             SharedPreferences.Editor e = settings.edit();
             e.remove("user_name");
