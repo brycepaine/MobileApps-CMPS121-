@@ -308,12 +308,12 @@ public class MainFragment extends Fragment {
 //        if long or lat is null get location
         else if (lat == null && lng == null){
             requestLocationUpdate();
-            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+//            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 //            setSupportActionBar(toolbar);
         }
         else {
 //            user is signed in and has location, get the images
-            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+//            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 //            setSupportActionBar(toolbar);
             getImageURLs();
         }
@@ -432,7 +432,7 @@ public class MainFragment extends Fragment {
     }
 
     /*
-Request location update. This must be called in onResume if the user has allowed location sharing
+Request location uplate. This must be called in onResume if the user has allowed location sharing
 */
     private void requestLocationUpdate(){
         Log.i(LOG_TAG, "requesting update");

@@ -103,8 +103,8 @@ public class MainActivity extends AppCompatActivity
     private String spinnerHashKey;
 
 
-    NavigationView navigationView = null;
-    Toolbar toolbar = null;
+    NavigationView navigationView;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +145,8 @@ public class MainActivity extends AppCompatActivity
         user_name = settings.getString("user_name", null);
         image_id = settings.getString("image_id", null);
         user_profile_pic = settings.getString("user_profile",null);
+        lat = settings.getString("lat",null);
+        lng = settings.getString("lng",null);
 
 
 
@@ -217,6 +219,12 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_inbox) {
             Intent intent = new Intent(this, PmActivity.class);
             intent.putExtra("user_name", user_name);
+            startActivity(intent);
+        }else if(id==R.id.local_chat){
+            Intent intent = new Intent(this, LocalChat.class);
+            intent.putExtra("user_name", user_name);
+            intent.putExtra("lat", lat);
+            intent.putExtra("lng",lng);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             SharedPreferences.Editor e = settings.edit();

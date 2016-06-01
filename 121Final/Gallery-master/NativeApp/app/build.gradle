@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 
+
 android {
     useLibrary 'org.apache.http.legacy'
     compileSdkVersion 23
@@ -20,7 +21,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
+    }
 }
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -38,5 +46,9 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.0.0-RC1'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.firebase:firebase-client-android:2.5.2+'
+
     compile files('libs/sinch-android-rtc-3.9.4.jar')
 }
+
+
