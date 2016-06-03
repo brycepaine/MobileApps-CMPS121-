@@ -12,7 +12,7 @@
         android:orientation="vertical">
         <include
             android:id="@+id/toolbar_comment"
-            layout="@layout/toolbar" />
+            layout="@layout/toolbar_comment" />
     </LinearLayout>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"

@@ -198,6 +198,9 @@ public class SignupActivity extends AppCompatActivity {
                     SharedPreferences.Editor e = settings.edit();
                     Log.i(LOG_TAG, "name and image id at signup " + name + image_id);
                     e.putString("user_name", name);
+                    if (image_id == null){
+                        image_id="default_user";
+                    }
                     e.putString("user_profile",image_id);
                     e.commit();
 
@@ -220,26 +223,29 @@ public class SignupActivity extends AppCompatActivity {
             this.image = image;
             this.name = name;
         }
+
         @Override
         protected Void doInBackground(Void... params){
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-            String encodedImage = Base64.encodeToString(byteArrayOutputStream.toByteArray(),Base64.DEFAULT );
+            if(image != null) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                String encodedImage = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
 
-            ArrayList<NameValuePair> dataToSend = new ArrayList<>();
-            dataToSend.add(new BasicNameValuePair("image",encodedImage));
-            dataToSend.add(new BasicNameValuePair("name", name));
+                ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+                dataToSend.add(new BasicNameValuePair("image", encodedImage));
+                dataToSend.add(new BasicNameValuePair("name", name));
 
-            HttpParams httpRequestParams = getHttpRequestParams();
-            HttpClient client = new DefaultHttpClient(httpRequestParams);
-            HttpPost post = new HttpPost(SERVER_ADDRESS + "SavePicture.php");
+                HttpParams httpRequestParams = getHttpRequestParams();
+                HttpClient client = new DefaultHttpClient(httpRequestParams);
+                HttpPost post = new HttpPost(SERVER_ADDRESS + "SavePicture.php");
 
-            try {
-                post.setEntity(new UrlEncodedFormEntity(dataToSend));
-                client.execute(post);
+                try {
+                    post.setEntity(new UrlEncodedFormEntity(dataToSend));
+                    client.execute(post);
 
-            }catch(Exception e) {
-                e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             return null;
@@ -248,7 +254,7 @@ public class SignupActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid){
             super.onPostExecute(aVoid);
-            Toast.makeText(getApplicationContext(), "Profile Image Uploaded", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "Profile Image Uploaded", Toast.LENGTH_SHORT).show();
             //Intent i = new Intent(getApplicationContext(), LoginActivity.class);
             //startActivity(i);
         }
@@ -520,7 +526,8 @@ public class SignupActivity extends AppCompatActivity {
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
-        finish();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     public void onSignupFailed() {

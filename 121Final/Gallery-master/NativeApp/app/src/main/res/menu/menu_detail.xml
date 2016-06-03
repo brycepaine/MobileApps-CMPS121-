@@ -11,15 +11,6 @@
         android:icon="@drawable/ic_action_action_autorenew"
         android:title="example"
         app:showAsAction="ifRoom" />
-    <item android:id="@+id/my_profile" android:title="My Profile"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/inbox" android:title="Inbox"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_upload" android:title="Upload Picture"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_take" android:title="Take Picture"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/signout" android:title="Signout"
-        android:orderInCategory="100" app:showAsAction="never" />
+
 
 </menu>

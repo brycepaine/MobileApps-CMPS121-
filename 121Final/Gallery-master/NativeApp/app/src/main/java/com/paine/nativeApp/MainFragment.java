@@ -147,9 +147,9 @@ public class MainFragment extends Fragment {
 
             settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-            radius = settings.getInt("spinner",5);
+            radius = settings.getInt("spinner", 5);
             theposition = spinnerHash.get(radius + " Miles");
-//            Log.i(LOG_TAG, "spinner hash position" + theposition + " radius:" + radius);
+            Log.i(LOG_TAG, "spinner hash position" + theposition + " radius:" + radius);
             spinner.setSelection(theposition);
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -169,11 +169,15 @@ public class MainFragment extends Fragment {
                         case 3:
                             radius = 50;
                             break;
+                        case 4:
+                            radius= 100;
+                            break;
                     }
                     Log.i(LOG_TAG, "radius " + radius);
                     SharedPreferences.Editor e = settings.edit();
                     e.putInt("spinner", radius);
                     e.commit();
+                    getImageURLs();
                 }
 
                 @Override
@@ -207,33 +211,6 @@ public class MainFragment extends Fragment {
 
         }
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_upload) {
-            showFileChooser();
-        }
-
-        if (id == R.id.my_profile){
-            Intent intent = new Intent(getActivity(), UserActivity.class);
-            intent.putExtra("user_name", user_name);
-            startActivity(intent);
-        }
-
-        if (id == R.id.inbox){
-            Intent intent = new Intent(getActivity(), PmActivity.class);
-            intent.putExtra("user_name", user_name);
-            startActivity(intent);
-        }
-
-        if (id == R.id.action_take){
-            clickpic();
-//            Log.i(LOG_TAG, "inside action take");
-        }
-        if (id == R.id.signout){
-            SharedPreferences.Editor e = settings.edit();
-            e.remove("user_name");
-            e.commit();
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            startActivity(intent);
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -271,7 +248,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onResume(){
-//        Log.i(LOG_TAG, "on resume");
+        Log.i(LOG_TAG, "on resume");
 //        Log.i(LOG_TAG, "refresh on resume " + refresh);
         serviceIntent = new Intent(getActivity(), MessageService.class);
         getActivity().startService(serviceIntent);
@@ -288,13 +265,15 @@ public class MainFragment extends Fragment {
         lat = settings.getString("lat", null);
         lng = settings.getString("lng", null);
         user_name = settings.getString("user_name", null);
-//        Log.i(LOG_TAG, "radius on resume " + radius);
+        Log.i(LOG_TAG, "lat lng on resume" + lat + lng);
 
         progressBar = (ProgressBar) getActivity().findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
 
         mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        radius = settings.getInt("spinner",5);
 
 //        Log.i(LOG_TAG, "on create user name: " + user_name + " lat: " + lat + lng);
 
@@ -307,6 +286,7 @@ public class MainFragment extends Fragment {
 
 //        if long or lat is null get location
         else if (lat == null && lng == null){
+            Log.i(LOG_TAG, "lat and lng are null");
             requestLocationUpdate();
 //            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 //            setSupportActionBar(toolbar);
@@ -315,6 +295,7 @@ public class MainFragment extends Fragment {
 //            user is signed in and has location, get the images
 //            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 //            setSupportActionBar(toolbar);
+            requestLocationUpdate();
             getImageURLs();
         }
 
@@ -358,7 +339,7 @@ public class MainFragment extends Fragment {
 
     }
 
-    private void getImageURLs(){
+    public void getImageURLs(){
 
         removeLocationUpdate();
 //        Log.i(LOG_TAG, "get image urls");
@@ -380,9 +361,9 @@ public class MainFragment extends Fragment {
 
         ImageURLService service = retrofit.create(ImageURLService.class);
 
-        Log.i(LOG_TAG, "the user_name is: " + user_name);
+        Log.i(LOG_TAG, "the user_name is: " + user_name + "RADIUS" + radius);
         Call<ImageURLResponse> queryResponseCall =
-                service.getURL(lat, lng, user_name);
+                service.getURL(lat, lng, user_name, radius);
 
         //Call retrofit asynchronously
         queryResponseCall.enqueue(new Callback<ImageURLResponse>() {
@@ -428,13 +409,14 @@ public class MainFragment extends Fragment {
         @GET("default/get_images")
         Call<ImageURLResponse> getURL(@Query("lat") String lat,
                                       @Query("lng") String lng,
-                                      @Query("user_name") String user_name);
+                                      @Query("user_name") String user_name,
+                                      @Query("radius")  Integer radius);
     }
 
     /*
 Request location uplate. This must be called in onResume if the user has allowed location sharing
 */
-    private void requestLocationUpdate(){
+    public void requestLocationUpdate(){
         Log.i(LOG_TAG, "requesting update");
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (locationManager != null &&
@@ -598,6 +580,48 @@ Request location uplate. This must be called in onResume if the user has allowed
     public void onDestroy() {
         getActivity().stopService(new Intent(getActivity(), MessageService.class));
         super.onDestroy();
+    }
+
+    public void Vote(String image_id, String vote) {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // set your desired log level
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://empirical-realm-123103.appspot.com/pictureApp/")    //We are using Foursquare API to get data
+                .addConverterFactory(GsonConverterFactory.create())    //parse Gson string
+                .client(httpClient)    //add logging
+                .build();
+
+        Call<Example> GetMessageCall;
+
+        Log.i(LOG_TAG, "the vote in main is " + vote);
+
+        if (vote.equals("up")) {
+            MainFragment.UpvoteService get_service = retrofit.create(MainFragment.UpvoteService.class);
+            GetMessageCall = get_service.upvote(user_name, image_id);
+            Log.i(LOG_TAG, "upvote in user");
+        } else{
+            MainFragment.DownvoteService get_service = retrofit.create(MainFragment.DownvoteService.class);
+            GetMessageCall = get_service.upvote(user_name, image_id);
+            Log.i(LOG_TAG, "downvote in user");
+        }
+        //Call retrofit asynchronously
+        GetMessageCall.enqueue(new Callback<Example>() {
+            @Override
+            public void onResponse(Response<Example> response) {
+                Log.i(LOG_TAG, "upvoted");
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                // Log error here since request failed
+            }
+        });
     }
 
 }

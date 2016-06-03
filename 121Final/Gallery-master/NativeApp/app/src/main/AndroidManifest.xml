@@ -19,7 +19,6 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name=".FireBaseLifeCycle"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="Native"
@@ -35,12 +34,11 @@
         </activity>
         <activity android:name="com.paine.nativeApp.LoginActivity" android:theme="@style/login" />
         <activity android:name="com.paine.nativeApp.SignupActivity" android:theme="@style/login" />
-        <activity android:name="com.paine.nativeApp.PreviewActivity" android:theme="@style/AppTheme.Dark"/>
-        <activity android:name="com.paine.nativeApp.CommentActivity" android:theme="@style/AppTheme"/>
+        <activity android:name="com.paine.nativeApp.PreviewActivity" android:theme="@style/login"/>
+        <activity android:name="com.paine.nativeApp.CommentActivity" android:theme="@style/login"/>
         <activity android:name="com.paine.nativeApp.UserActivity"/>
         <activity android:name="com.paine.nativeApp.PmActivity"/>
         <activity android:name="com.paine.nativeApp.SendPmActivity"/>
-        <activity android:name="com.paine.nativeApp.LocalChat"/>
         <service android:name=".MessageService"></service>
         <activity android:name="com.paine.nativeApp.PmConversationActivity"/>
 

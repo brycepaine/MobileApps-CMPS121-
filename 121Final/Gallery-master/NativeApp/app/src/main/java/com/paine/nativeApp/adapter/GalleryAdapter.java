@@ -2,8 +2,10 @@ package com.paine.nativeApp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +28,8 @@ import com.paine.nativeApp.models.ImageModel;
 import com.paine.nativeApp.R;
 import com.paine.nativeApp.SendPmActivity;
 import com.paine.nativeApp.UserActivity;
+import com.paine.nativeApp.response.Example;
+
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -33,6 +37,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.GsonConverterFactory;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * Created by Suleiman19 on 10/22/15.
@@ -143,32 +154,29 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
 
 
 //     FIX THIS
-//        customViewHolder.downvote.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                customViewHolder.downvote.setColorFilter(Color.argb(255, 165, 42, 42));
-//                customViewHolder.upvote.setColorFilter(Color.argb(255, 29, 29, 29));
-//                customViewHolder.votecount.setText(Integer.toString(feedItem.getVotes() - 1));
-//                Log.i(LOG_TAG, "name clickd");
-//                ((MainActivity) mContext).Vote(feedItem.getImageID(), "down");
-//
-//
-//            }
-//        });
+        customViewHolder.downvote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customViewHolder.downvote.setColorFilter(Color.argb(255, 165, 42, 42));
+                customViewHolder.upvote.setColorFilter(Color.argb(255, 29, 29, 29));
+                customViewHolder.votecount.setText(Integer.toString(feedItem.getVotes() - 1));
+                Log.i(LOG_TAG, "name clickd");
+                Vote(feedItem.getImageID(), "down");
+            }
+        });
 
-//        FIX THIS
-//        customViewHolder.upvote.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                customViewHolder.upvote.setColorFilter(Color.argb(255, 0, 0, 128));
-//                customViewHolder.downvote.setColorFilter(Color.argb(255, 29, 29, 29));
-//                customViewHolder.votecount.setText(Integer.toString(feedItem.getVotes() + 1));
-//                Log.i(LOG_TAG, "name clickd");
-//                ((MainFragment) mContext).Vote(feedItem.getImageID(), "up");
-//
-//
-//            }
-//        });
+        customViewHolder.upvote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customViewHolder.upvote.setColorFilter(Color.argb(255, 0, 0, 128));
+                customViewHolder.downvote.setColorFilter(Color.argb(255, 29, 29, 29));
+                customViewHolder.votecount.setText(Integer.toString(feedItem.getVotes() + 1));
+                Log.i(LOG_TAG, "name clickd");
+                Vote(feedItem.getImageID(), "up");
+
+
+            }
+        });
 
         customViewHolder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -292,6 +300,50 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.CustomVi
             this.votecount = (TextView) view.findViewById(R.id.vote_count);
 
         }
+    }
+
+    public void Vote(String image_id, String vote) {
+        SharedPreferences settings =  PreferenceManager.getDefaultSharedPreferences(mContext);
+        String user_name = settings.getString("user_name",null);
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // set your desired log level
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://empirical-realm-123103.appspot.com/pictureApp/")    //We are using Foursquare API to get data
+                .addConverterFactory(GsonConverterFactory.create())    //parse Gson string
+                .client(httpClient)    //add logging
+                .build();
+
+        Call<Example> GetMessageCall;
+
+        Log.i(LOG_TAG, "the vote in main is " + vote);
+
+        if (vote.equals("up")) {
+            MainFragment.UpvoteService get_service = retrofit.create(MainFragment.UpvoteService.class);
+            GetMessageCall = get_service.upvote(user_name, image_id);
+            Log.i(LOG_TAG, "upvote in user");
+        } else{
+            MainFragment.DownvoteService get_service = retrofit.create(MainFragment.DownvoteService.class);
+            GetMessageCall = get_service.upvote(user_name, image_id);
+            Log.i(LOG_TAG, "downvote in user");
+        }
+        //Call retrofit asynchronously
+        GetMessageCall.enqueue(new Callback<Example>() {
+            @Override
+            public void onResponse(Response<Example> response) {
+                Log.i(LOG_TAG, "upvoted");
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                // Log error here since request failed
+            }
+        });
     }
 
 }

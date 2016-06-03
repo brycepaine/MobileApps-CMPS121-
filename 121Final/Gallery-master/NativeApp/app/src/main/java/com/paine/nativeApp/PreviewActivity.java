@@ -19,6 +19,7 @@ import android.view.Display;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
@@ -57,6 +58,8 @@ public class PreviewActivity extends AppCompatActivity {
     private static final String SERVER_ADDRESS = "http://imagegallery.netai.net/";
     private Uri imageUri;
     private Bitmap bitmap;
+    private ProgressBar progressBar;
+
     private Bitmap bitmapScaled;
     private static String LOG_TAG = "MyApplication";
 
@@ -77,6 +80,8 @@ public class PreviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         user_name = settings.getString("user_name", null);
@@ -153,6 +158,7 @@ public class PreviewActivity extends AppCompatActivity {
 
     public void uploadPhoto(View v){
         Log.i(LOG_TAG, "upload photo clicked");
+        progressBar.setVisibility(View.VISIBLE);
         Log.i(LOG_TAG, "username upload url" + image_id); //uploadImageName.getText().toString() );
         //upload image to server with imageid as url
         new UploadImage(bitmap, image_id).execute();
@@ -188,6 +194,7 @@ public class PreviewActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
                 retrofit_upload = true;
                 if(http_upload == true) {
+                    progressBar.setVisibility(View.INVISIBLE);
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(i);
                 }

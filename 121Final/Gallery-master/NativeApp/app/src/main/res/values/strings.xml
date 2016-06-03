@@ -12,6 +12,7 @@
         <item>10 Miles</item>
         <item>30 Miles</item>
         <item>50 Miles</item>
+        <item>ALL</item>
     </string-array>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

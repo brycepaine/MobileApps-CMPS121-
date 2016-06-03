@@ -229,7 +229,7 @@ public class UserActivity extends AppCompatActivity {
 
         Log.i(LOG_TAG, "the user_name is: " + user_name);
         Call<ImageURLResponse> queryResponseCall =
-                service.getURL(lat, lng, user_name);
+                service.getURL(lat, lng, user_name, 100);
 
         //Call retrofit asynchronously
         queryResponseCall.enqueue(new Callback<ImageURLResponse>() {

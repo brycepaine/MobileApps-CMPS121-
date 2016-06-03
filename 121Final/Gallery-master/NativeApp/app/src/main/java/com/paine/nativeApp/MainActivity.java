@@ -144,7 +144,13 @@ public class MainActivity extends AppCompatActivity
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         user_name = settings.getString("user_name", null);
         image_id = settings.getString("image_id", null);
+        if(image_id == null){
+            image_id = "default_user";
+        }
         user_profile_pic = settings.getString("user_profile",null);
+        if (user_profile_pic == null){
+            user_profile_pic = "default_user";
+        }
         lat = settings.getString("lat",null);
         lng = settings.getString("lng",null);
 
@@ -219,12 +225,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_inbox) {
             Intent intent = new Intent(this, PmActivity.class);
             intent.putExtra("user_name", user_name);
-            startActivity(intent);
-        }else if(id==R.id.local_chat){
-            Intent intent = new Intent(this, LocalChat.class);
-            intent.putExtra("user_name", user_name);
-            intent.putExtra("lat", lat);
-            intent.putExtra("lng",lng);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             SharedPreferences.Editor e = settings.edit();
@@ -375,11 +375,20 @@ public class MainActivity extends AppCompatActivity
                             break;
                         case 3: radius = 50;
                             break;
+                        case 4: radius = 100;
+                            break;
                     }
                     Log.i(LOG_TAG, "radius " + radius);
                     SharedPreferences.Editor e = settings.edit();
                     e.putInt("spinner", radius);
                     e.commit();
+                    getFragmentManager().popBackStack();
+
+                    MainFragment fragment = new MainFragment();
+                    android.support.v4.app.FragmentTransaction fragmentTransaction =
+                            getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment_container, fragment);
+                    fragmentTransaction.commit();
                 }
 
                 @Override
@@ -402,10 +411,12 @@ public class MainActivity extends AppCompatActivity
 
         if(id == R.id.refresh){
 //            refresh = true;
-//            SharedPreferences.Editor e = settings.edit();
-//            e.putString("lat", null);
-//            e.putString("lng", null);
-//            e.commit();
+            settings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            SharedPreferences.Editor e = settings.edit();
+            e.putString("lat", null);
+            e.putString("lng", null);
+            e.commit();
+            Log.i(LOG_TAG, "lat lng should be null" + settings.getString("lat", null));
 //            Log.i(LOG_TAG, "lat after refresh should be null" + settings.getString("lat", null));
 //            //adapter.clearData();
 //            //progressBar.setVisibility(View.VISIBLE);
