@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -30,6 +31,8 @@ import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.paine.nativeApp.adapter.CommentAdapter;
 import com.paine.nativeApp.models.CommentModel;
 
@@ -62,6 +65,7 @@ public class CommentActivity extends AppCompatActivity {
     private Button send;
     private String comment_id;
     private String comment;
+    private ImageView preview;
 
     public interface GetService {
         @GET("default/get_comments")
@@ -80,6 +84,7 @@ public class CommentActivity extends AppCompatActivity {
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         user_name = settings.getString("user_name", null);
 
+        preview=(ImageView) findViewById(R.id.the_image);
         Log.i(LOG_TAG, "onCreate Comment Activity");
         //spinner = (ProgressBar)findViewById(R.id.progressBar1);
 
@@ -132,6 +137,10 @@ public class CommentActivity extends AppCompatActivity {
     public void onResume(){
         image_id = getIntent().getStringExtra("image_id");
         Log.i(LOG_TAG, "image_id" + image_id);
+
+        Glide.with(this).load("http://imagegallery.netai.net/pictures/" + image_id + ".JPG")
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(preview);
 
 
         user_name = getIntent().getStringExtra("user_name");

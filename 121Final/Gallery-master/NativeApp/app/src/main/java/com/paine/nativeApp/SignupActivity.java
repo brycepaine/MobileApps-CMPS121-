@@ -79,6 +79,7 @@ public class SignupActivity extends AppCompatActivity {
     private String uploadImagestr;
     private SharedPreferences settings;
     private Integer ImageWidth;
+    private ProgressDialog progressDialog;
 
     private static String name;
 
@@ -149,7 +150,7 @@ public class SignupActivity extends AppCompatActivity {
 
         _signupButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
+        progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
@@ -333,6 +334,7 @@ public class SignupActivity extends AppCompatActivity {
             // retrieve data on return
             cropIntent.putExtra("return-data", true);
             // start the activity - we handle returning in onActivityResult
+            Log.i(LOG_TAG,"perform crop");
             startActivityForResult(cropIntent, PIC_CROP);
         }
         // respond to users whose devices do not support the crop action
@@ -405,6 +407,7 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         if (requestCode == PIC_CROP) {
+            Log.i(LOG_TAG,"on pic_crop result");
             if (data != null) {
                 Bundle extras = data.getExtras();
                 // get the cropped bitmap
@@ -532,7 +535,9 @@ public class SignupActivity extends AppCompatActivity {
 
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "User name taken", Toast.LENGTH_LONG).show();
-
+        if(progressDialog!=null){
+            progressDialog.hide();
+        }
         _signupButton.setEnabled(true);
     }
 

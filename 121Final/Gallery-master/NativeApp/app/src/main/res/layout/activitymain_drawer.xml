@@ -8,13 +8,16 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-
-    <include
-        android:id="@+id/toolbar1"
-        layout="@layout/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            android:id="@+id/toolbar1"
+            layout="@layout/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar"
