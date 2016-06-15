@@ -47,6 +47,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.android.support:support-v4:23.3.0'
+    compile 'com.android.support:support-annotations:23.1.0'
 
     compile files('libs/sinch-android-rtc-3.9.4.jar')
 }

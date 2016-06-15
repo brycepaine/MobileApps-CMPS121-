@@ -20,5 +20,29 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Navigation Drawer -->
+    <string name="nav_drawer_item_home">Home</string>
+    <string name="nav_drawer_item_inbox">Inbox</string>
+    <string name="nav_drawer_profile">My Profile</string>
+    <string name="nav_drawer_import">Import</string>
+    <string name="nav_drawer_camera">Camera</string>
+    <string name="nav_drawer_logout">Logout</string>
+
+    <string name="navigation_drawer_opened">The navigation drawer is opened</string>
+    <string name="navigation_drawer_closed">The navigation drawer is closed</string>
+    <string name="tag_nav_drawer_main_entry">nav_drawer_main_entry</string>
+    <string name="tag_nav_drawer_special_entry">nav_drawer_special_entry</string>
+    <string name="tools_text_account_information_username">Sotti</string>
+    <string name="tools_text_account_information_email">sotti@sottocorp.com</string>
+
+    <!-- Toolbar titles -->
+    <string name="toolbar_title_home">Home</string>
+    <string name="toolbar_title_inbox">Inbox</string>
+    <string name="toolbar_title_profile">My Profile</string>
+    <string name="toolbar_title_import">Import</string>
+    <string name="toolbar_title_camera">Camera</string>
+
+
+
 
 </resources>

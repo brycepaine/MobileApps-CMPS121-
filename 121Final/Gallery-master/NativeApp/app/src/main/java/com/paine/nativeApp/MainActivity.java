@@ -1,13 +1,19 @@
 package com.paine.nativeApp;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import com.paine.nativeApp.customViews.ScrimInsetsFrameLayout;
+
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 
+import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GravityCompat;
 
 import android.support.v4.widget.DrawerLayout;
@@ -38,7 +44,9 @@ import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -49,6 +57,8 @@ import com.paine.nativeApp.MainFragment;
 import com.paine.nativeApp.adapter.GalleryAdapter;
 import com.paine.nativeApp.models.ImageModel;
 import com.paine.nativeApp.response.ProfilePicResponse;
+import com.paine.nativeApp.utils.UtilsDevice;
+import com.paine.nativeApp.utils.UtilsMiscellaneous;
 
 
 import java.util.ArrayList;
@@ -66,7 +76,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements View.OnClickListener {
 
     private static String LOG_TAG = "MyApplication";
 
@@ -106,39 +116,115 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     Toolbar toolbar;
 
+    private DrawerLayout mDrawerLayout;
+    private LinearLayout mNavDrawerEntriesRootView;
+    private PercentRelativeLayout mFrameLayout_AccountView;
+    private FrameLayout mFrameLayout_Home, mFrameLayout_Inbox,
+            mFrameLayout_Profile, mFrameLayout_Import, mFrameLayout_Camera,
+            mFrameLayout_Logout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         Log.i(LOG_TAG, "on create");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activitymain_drawer);
+        initialize();
+
+    }
+
+    private void initialize(){
+        final Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        setSupportActionBar(mToolbar);
+
+        mFrameLayout_AccountView = (PercentRelativeLayout) findViewById
+                (R.id.navigation_drawer_account_view);
+
+        mNavDrawerEntriesRootView = (LinearLayout)findViewById
+                (R.id.navigation_drawer_linearLayout_entries_root_view);
+
+        mFrameLayout_Home = (FrameLayout) findViewById
+                (R.id.navigation_drawer_items_list_linearLayout_home);
+
+        mFrameLayout_Inbox = (FrameLayout) findViewById
+                (R.id.navigation_drawer_items_list_inbox);
+
+        mFrameLayout_Profile = (FrameLayout) findViewById
+                (R.id.navigation_drawer_items_list_profile);
+
+        mFrameLayout_Import = (FrameLayout) findViewById
+                (R.id.navigation_drawer_items_list_import);
+
+        mFrameLayout_Camera = (FrameLayout) findViewById
+                (R.id.navigation_drawer_items_list_camera);
+
+        mFrameLayout_Logout = (FrameLayout) findViewById
+                (R.id.navigation_drawer_items_list_logout);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity_DrawerLayout);
+
+        final ScrimInsetsFrameLayout mScrimInsetsFrameLayout = (ScrimInsetsFrameLayout)
+                findViewById(R.id.main_activity_navigation_drawer_rootLayout);
+
+        final ActionBarDrawerToggle mActionBarDrawerToggle = new ActionBarDrawerToggle
+                (
+                        this,
+                        mDrawerLayout,
+                        mToolbar,
+                        R.string.navigation_drawer_opened,
+                        R.string.navigation_drawer_closed
+                )
+        {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset)
+            {
+                // Disables the burger/arrow animation by default
+                super.onDrawerSlide(drawerView, 0);
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
+
+        mActionBarDrawerToggle.syncState();
+
+        // Navigation Drawer layout width
+        final int possibleMinDrawerWidth =
+                UtilsDevice.getScreenWidth(this) -
+                        UtilsMiscellaneous
+                                .getThemeAttributeDimensionSize(this, android.R.attr.actionBarSize);
+
+        final int maxDrawerWidth =
+                getResources().getDimensionPixelSize(R.dimen.navigation_drawer_max_width);
+
+        mScrimInsetsFrameLayout.getLayoutParams().width =
+                Math.min(possibleMinDrawerWidth, maxDrawerWidth);
+
+        // Nav Drawer item click listener
+        mFrameLayout_AccountView.setOnClickListener(this);
+        mFrameLayout_Home.setOnClickListener(this);
+        mFrameLayout_Inbox.setOnClickListener(this);
+        mFrameLayout_Profile.setOnClickListener(this);
+        mFrameLayout_Import.setOnClickListener(this);
+        mFrameLayout_Camera.setOnClickListener(this);
+        mFrameLayout_Logout.setOnClickListener(this);
+
+
+        // Set the first item as selected for the first time
+        if (getSupportActionBar() != null)
+        {
+            getSupportActionBar().setTitle(R.string.toolbar_title_home);
+        }
+
+        mFrameLayout_Home.setSelected(true);
+
         refresh = false;
         Log.i(LOG_TAG, "refresh on create " + refresh);
-        spinnerHash.put("5 Miles",0);
+        spinnerHash.put("5 Miles", 0);
         spinnerHash.put("10 Miles", 1);
         spinnerHash.put("30 Miles", 2);
         spinnerHash.put("50 Miles", 3);
 
-        //Set the fragment initially
-        MainFragment fragment = new MainFragment();
-        android.support.v4.app.FragmentTransaction fragmentTransaction =
-                getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
 
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -151,18 +237,9 @@ public class MainActivity extends AppCompatActivity
         if (user_profile_pic == null){
             user_profile_pic = "default_user";
         }
-        lat = settings.getString("lat",null);
-        lng = settings.getString("lng",null);
-
-
-
-        //How to change elements in the header programatically
-        View headerView = navigationView.getHeaderView(0);
-        TextView User_Name = (TextView) headerView.findViewById(R.id.username);
-        User_Name.setText(user_name);
 
         CircleImageView Profile_Pic =
-                (CircleImageView) headerView.findViewById(R.id.profile_image);
+                (CircleImageView) findViewById(R.id.navigation_drawer_user_account_picture_profile);
 
         Log.i(LOG_TAG, "IMAGE_ID!!!!!!!!!!!" + image_id);
         Log.i(LOG_TAG, "http://imagegallery.netai.net/pictures/" + user_profile_pic + ".JPG");
@@ -170,76 +247,270 @@ public class MainActivity extends AppCompatActivity
         Glide.with(this)
                 .load("http://imagegallery.netai.net/pictures/" + user_profile_pic + ".JPG")
                 .into(Profile_Pic);
+        lat = settings.getString("lat",null);
+        lng = settings.getString("lng",null);
 
-        navigationView.setNavigationItemSelectedListener(this);
-    }
+        TextView name =
+                (TextView) findViewById(R.id.navigation_drawer_account_information_display_name);
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        if(user_name != null){
+            name.setText(user_name);
         }
+
+
+
+
+
+
+
+
+
+
+
+        setUpIcons();
+
+        // Layout resources
+
+
+
+
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+    /**
+     * Set up the rows when any is pressed
+     *
+     * @param pressedRow is the pressed row in the drawer
+     */
+    private void onRowPressed(@NonNull final FrameLayout pressedRow)
+    {
+        if (pressedRow.getTag() != getResources().getString(R.string.tag_nav_drawer_special_entry))
+        {
+            for (int i = 0; i < mNavDrawerEntriesRootView.getChildCount(); i++)
+            {
+                final View currentView = mNavDrawerEntriesRootView.getChildAt(i);
 
-//        if (id == R.id.nav_homeslide) {
-//            //Set the fragment initially
-//            getFragmentManager().popBackStack();
+                final boolean currentViewIsMainEntry = currentView.getTag() ==
+                        getResources().getString(R.string.tag_nav_drawer_main_entry);
+
+                if (currentViewIsMainEntry)
+                {
+                    currentView.setSelected(currentView == pressedRow);
+                }
+            }
+        }
+
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public void onClick(View view)
+    {
+
+            if (!view.isSelected())
+            {
+                onRowPressed((FrameLayout) view);
+
+                if (view == mFrameLayout_Home)
+                {
+                    if (getSupportActionBar() != null)
+                    {
+                        getSupportActionBar().setTitle(getString(R.string.toolbar_title_home));
+                    }
+
+                    view.setSelected(true);
+
+
+
+                    MainFragment fragment = new MainFragment();
+                    // Insert the fragment by replacing any existing fragment
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.main_activity_content_frame, fragment)
+                            .commit();
+                }
+                else if (view == mFrameLayout_Inbox)
+                {
+                    Intent intent = new Intent(this, PmActivity.class);
+                    intent.putExtra("user_name", user_name);
+                    startActivity(intent);
+                }
+                else if (view == mFrameLayout_Profile)
+                {
+                    Intent intent = new Intent(this, UserActivity.class);
+                    intent.putExtra("user_name", user_name);
+                    startActivity(intent);
+                }
+                else if (view == mFrameLayout_Import)
+                {
+                    // Show about activity
+                    showFileChooser();
+                }
+                else if (view == mFrameLayout_Camera)
+                {
+                    clickpic();
+                    Log.i(LOG_TAG, "inside action take");
+                }
+                else if (view == mFrameLayout_Logout)
+                {
+                    SharedPreferences.Editor e = settings.edit();
+                    e.remove("user_name");
+                    e.remove("user_profile");
+                    e.commit();
+                    finish();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+            else
+            {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            }
 //
-//            MainFragment fragment = new MainFragment();
-//            android.support.v4.app.FragmentTransaction fragmentTransaction =
-//                    getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction.replace(R.id.fragment_container, fragment);
-//            fragmentTransaction.commit();
-
-            // Handle the camera action
-        if (id == R.id.nav_upload) {
-            showFileChooser();
-
-        } else if (id == R.id.nav_camera) {
-            clickpic();
-            Log.i(LOG_TAG, "inside action take");
-
-        } else if (id == R.id.nav_myslide) {
-            //Set the fragment initially
-
-            Intent intent = new Intent(this, UserActivity.class);
-            intent.putExtra("user_name", user_name);
-            startActivity(intent);
-
-
-//            MyPhoto fragment = new MyPhoto();
-//            android.support.v4.app.FragmentTransaction fragmentTransaction =
-//                    getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction.replace(R.id.fragment_container, fragment);
-//            fragmentTransaction.commit();
-
-        } else if (id == R.id.nav_inbox) {
-            Intent intent = new Intent(this, PmActivity.class);
-            intent.putExtra("user_name", user_name);
-            startActivity(intent);
-        } else if (id == R.id.nav_logout) {
-            SharedPreferences.Editor e = settings.edit();
-            e.remove("user_name");
-            e.remove("user_profile");
-            e.commit();
-            finish();
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
+
+
+    /**
+     * Sets a tint list to the icons
+     *
+     * Uses DrawableCompat to make it work before SKD 21
+     */
+    private void setUpIcons()
+    {
+        // Icons tint list
+        final ImageView homeImageView =
+                (ImageView) findViewById(R.id.navigation_drawer_items_list_icon_home);
+        final Drawable homeDrawable = DrawableCompat.wrap(homeImageView.getDrawable());
+        DrawableCompat.setTintList
+                (
+                        homeDrawable.mutate(),
+                        ContextCompat.getColorStateList(this, R.color.nav_drawer_icon)
+                );
+
+        homeImageView.setImageDrawable(homeDrawable);
+
+        final ImageView inboxImageView =
+                (ImageView) findViewById(R.id.navigation_drawer_items_list_icon_inbox);
+        final Drawable inboxDrawable = DrawableCompat.wrap(inboxImageView.getDrawable());
+        DrawableCompat.setTintList
+                (
+                        inboxDrawable.mutate(),
+                        ContextCompat.getColorStateList(this, R.color.nav_drawer_icon)
+                );
+
+        inboxImageView.setImageDrawable(inboxDrawable);
+
+        final ImageView profileImageView =
+                (ImageView) findViewById(R.id.navigation_drawer_items_list_icon_profile);
+        final Drawable profileDrawable = DrawableCompat.wrap(profileImageView.getDrawable());
+        DrawableCompat.setTintList
+                (
+                        profileDrawable.mutate(),
+                        ContextCompat.getColorStateList(this, R.color.nav_drawer_icon)
+                );
+
+        profileImageView.setImageDrawable(profileDrawable);
+
+        final ImageView importImageView =
+                (ImageView) findViewById(R.id.navigation_drawer_items_list_icon_import);
+        final Drawable importDrawable = DrawableCompat.wrap(importImageView.getDrawable());
+        DrawableCompat.setTintList
+                (
+                        importDrawable.mutate(),
+                        ContextCompat.getColorStateList(this, R.color.nav_drawer_icon)
+                );
+
+        importImageView.setImageDrawable(importDrawable);
+
+        final ImageView cameraImageView =
+                (ImageView) findViewById(R.id.navigation_drawer_items_list_icon_camera);
+        final Drawable cameraDrawable = DrawableCompat.wrap(cameraImageView.getDrawable());
+        DrawableCompat.setTintList
+                (
+                        cameraDrawable.mutate(),
+                        ContextCompat.getColorStateList(this, R.color.nav_drawer_icon)
+                );
+
+        cameraImageView.setImageDrawable(cameraDrawable);
+
+        final ImageView logoutImageView =
+                (ImageView) findViewById(R.id.navigation_drawer_items_list_icon_logout);
+        final Drawable logoutDrawable = DrawableCompat.wrap(logoutImageView.getDrawable());
+        DrawableCompat.setTintList
+                (
+                        logoutDrawable.mutate(),
+                        ContextCompat.getColorStateList(this, R.color.nav_drawer_icon)
+                );
+
+        logoutImageView.setImageDrawable(logoutDrawable);
+
+    }
+
+//    @Override
+//    public void onBackPressed() {
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        if (drawer.isDrawerOpen(GravityCompat.START)) {
+//            drawer.closeDrawer(GravityCompat.START);
+//        } else {
+//            super.onBackPressed();
+//        }
+//    }
+
+//    @SuppressWarnings("StatementWithEmptyBody")
+//    @Override
+//    public boolean onNavigationItemSelected(MenuItem item) {
+//        // Handle navigation view item clicks here.
+//        int id = item.getItemId();
+//
+////        if (id == R.id.nav_homeslide) {
+////            //Set the fragment initially
+////            getFragmentManager().popBackStack();
+////
+////            MainFragment fragment = new MainFragment();
+////            android.support.v4.app.FragmentTransaction fragmentTransaction =
+////                    getSupportFragmentManager().beginTransaction();
+////            fragmentTransaction.replace(R.id.fragment_container, fragment);
+////            fragmentTransaction.commit();
+//
+//            // Handle the camera action
+//        if (id == R.id.nav_upload) {
+//            showFileChooser();
+//
+//        } else if (id == R.id.nav_camera) {
+//            clickpic();
+//            Log.i(LOG_TAG, "inside action take");
+//
+//        } else if (id == R.id.nav_myslide) {
+//            //Set the fragment initially
+//
+//            Intent intent = new Intent(this, UserActivity.class);
+//            intent.putExtra("user_name", user_name);
+//            startActivity(intent);
+//
+//
+////            MyPhoto fragment = new MyPhoto();
+////            android.support.v4.app.FragmentTransaction fragmentTransaction =
+////                    getSupportFragmentManager().beginTransaction();
+////            fragmentTransaction.replace(R.id.fragment_container, fragment);
+////            fragmentTransaction.commit();
+//
+//        } else if (id == R.id.nav_inbox) {
+//            Intent intent = new Intent(this, PmActivity.class);
+//            intent.putExtra("user_name", user_name);
+//            startActivity(intent);
+//        } else if (id == R.id.nav_logout) {
+//            SharedPreferences.Editor e = settings.edit();
+//            e.remove("user_name");
+//            e.remove("user_profile");
+//            e.commit();
+//            finish();
+//            Intent intent = new Intent(this, LoginActivity.class);
+//            startActivity(intent);
+//        }
+//
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        drawer.closeDrawer(GravityCompat.START);
+//        return true;
+//    }
 
     protected void onPause(){
         Log.i(LOG_TAG, "on pause");
@@ -260,87 +531,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void loadImages(){
-        Log.i(LOG_TAG, "load images");
-        progressBar.setVisibility(View.GONE);
-        adapter = new GalleryAdapter(MainActivity.this, mydata);
-        mRecyclerView.setAdapter(adapter);
-        progressBar.setVisibility(View.GONE);
-    }
-//
-//    private void getImageURLs(){
-//
-//        removeLocationUpdate();
-//        Log.i(LOG_TAG, "get image urls");
-//        //setProgressBarIndeterminateVisibility(true);
-//
-//        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-//        // set your desired log level
-//        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-//        OkHttpClient httpClient = new OkHttpClient.Builder()
-//                .addInterceptor(logging)
-//                .build();
-//
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("https://empirical-realm-123103.appspot.com/pictureApp/")
-//                .addConverterFactory(GsonConverterFactory.create())	//parse Gson string
-//                .client(httpClient)	//add logging
-//                .build();
-//
-//        ImageURLService service = retrofit.create(ImageURLService.class);
-//
-//        Call<ImageURLResponse> queryResponseCall =
-//                service.getURL(lat, lng);
-//
-//        //Call retrofit asynchronously
-//        queryResponseCall.enqueue(new Callback<ImageURLResponse>() {
-//            @Override
-//            public void onResponse(Response<ImageURLResponse> response) {
-//                if (response.code() == 500) {
-//                    Log.e(LOG_TAG, "Error, please try again");
-//                }
-//                ArrayList<ImageResult> imageInfo = new ArrayList<ImageResult>(response.body().getImageResult());
-//                for (int i = imageInfo.size()-1; i >= 0; i--) {
-//                    ImageResult res = imageInfo.get(i);
-//                    //if image is within proximity to user's location, then display it here
-//                    ImageModel imageModel = new ImageModel();
-//                    imageModel.setUserName(res.getUserName());
-//                    imageModel.setUrl("http://imagegallery.netai.net/pictures/" + res.getImageId() + ".JPG");
-//                    imageModel.setDescription(res.getDescription());
-//                    imageModel.setImageID(res.getImageId());
-//                    imageModel.setTimestamp(res.getTimestamp().toString());
-//                    Log.i(LOG_TAG, "TIMESTAMP " + res.getTimestamp());
-//                    Log.i(LOG_TAG, "image info list at :" + res + " username: " + res.getUserName()
-//                            + " URL : " + imageModel.getUrl() + "  description  " + res.getDescription());
-//
-//                    mydata.add(imageModel);
-//                    Log.i(LOG_TAG, "the data is " + mydata);
-//                }
-//                loadImages();
-//                Log.i(LOG_TAG, "Code is: " + response.code());
-//                Log.i(LOG_TAG, "response " + response.body().getImageResult());
-//                progressBar.setVisibility(View.GONE);
-//            }
-//
-//
-//            @Override
-//            public void onFailure(Throwable t) {
-//                // Log error here since request failed
-//                Log.i(LOG_TAG, "throwable t: " + t);
-//            }
-//        });
-//
-//
-//
-//    }
-//    /**
-//     * Foursquare api https://developer.foursquare.com/docs/venues/search
-//     */
-//    public interface ImageURLService {
-//        @GET("default/get_images")
-//        Call<ImageURLResponse> getURL(@Query("lat") String lat,
-//                                      @Query("lng") String lng);
-//    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -366,16 +557,21 @@ public class MainActivity extends AppCompatActivity
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     Log.i(LOG_TAG, "spinner pos " + position);
 
-                    switch(position){
-                        case 0: radius = 5;
+                    switch (position) {
+                        case 0:
+                            radius = 5;
                             break;
-                        case 1: radius = 10;
+                        case 1:
+                            radius = 10;
                             break;
-                        case 2: radius = 30;
+                        case 2:
+                            radius = 30;
                             break;
-                        case 3: radius = 50;
+                        case 3:
+                            radius = 50;
                             break;
-                        case 4: radius = 100;
+                        case 4:
+                            radius = 100;
                             break;
                     }
                     Log.i(LOG_TAG, "radius " + radius);
@@ -385,10 +581,11 @@ public class MainActivity extends AppCompatActivity
                     getFragmentManager().popBackStack();
 
                     MainFragment fragment = new MainFragment();
-                    android.support.v4.app.FragmentTransaction fragmentTransaction =
-                            getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.fragment_container, fragment);
-                    fragmentTransaction.commit();
+
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(R.id.main_activity_content_frame, fragment)
+                            .commit();
                 }
 
                 @Override
@@ -431,36 +628,13 @@ public class MainActivity extends AppCompatActivity
             MainFragment fragment = new MainFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction =
                     getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, fragment);
+            fragmentTransaction.add(R.id.fragment_container, fragment);
             fragmentTransaction.commit();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void showFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
 
-
-    private void clickpic() {
-        // Check Camera
-        Log.i(LOG_TAG, "click pick");
-        if (getApplicationContext().getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CAMERA)) {
-            // Open default camera
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-
-            // start the image capture Intent
-            startActivityForResult(intent, TAKE_PIC_REQUEST);
-
-        } else {
-            Toast.makeText(getApplication(), "Camera not supported", Toast.LENGTH_LONG).show();
-        }
-    }
 
 
     @Override
@@ -484,6 +658,33 @@ public class MainActivity extends AppCompatActivity
             startActivity(i);
         }
     }
+
+    private void clickpic() {
+        // Check Camera
+        Log.i(LOG_TAG, "click pick");
+        if (getApplicationContext().getPackageManager().hasSystemFeature(
+                PackageManager.FEATURE_CAMERA)) {
+            // Open default camera
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
+            // start the image capture Intent
+            startActivityForResult(intent, TAKE_PIC_REQUEST);
+
+        } else {
+            Toast.makeText(getApplication(), "Camera not supported", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void showFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+
+
 
 
 

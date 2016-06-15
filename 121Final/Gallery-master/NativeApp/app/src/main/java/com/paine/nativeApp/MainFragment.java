@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -103,6 +104,7 @@ import retrofit2.http.Query;
 public class MainFragment extends Fragment {
     private static String LOG_TAG = "MyApplication";
 
+    public static final String sARGUMENT_IMAGE_CODE = "image";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int TAKE_PIC_REQUEST = 100;
@@ -128,120 +130,100 @@ public class MainFragment extends Fragment {
         // Required empty public constructor
     }
 
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflator) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getActivity().getMenuInflater().inflate(R.menu.menu_detail, menu);
+//        MenuItem mSpinnerItem = menu.findItem(R.id.spinner);
+//        setHasOptionsMenu(true);
+//
+//        //this is for the spinner mile radius.  it defaults to shared preference value
+//        //or 5 if nothing has been saved
+//        View view = mSpinnerItem.getActionView();
+//        if (view instanceof Spinner)
+//        {
+//            Spinner spinner = (Spinner) view;
+//            spinner.setAdapter( ArrayAdapter.createFromResource( getActivity(),
+//                    R.array.spinner_data,
+//                    android.R.layout.simple_spinner_dropdown_item ) );
+//
+//            settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//
+//            radius = settings.getInt("spinner", 5);
+//            theposition = spinnerHash.get(radius + " Miles");
+//            Log.i(LOG_TAG, "spinner hash position" + theposition + " radius:" + radius);
+//            spinner.setSelection(theposition);
+//            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                @Override
+//                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                    Log.i(LOG_TAG, "spinner pos " + position);
+//
+//                    switch (position) {
+//                        case 0:
+//                            radius = 5;
+//                            break;
+//                        case 1:
+//                            radius = 10;
+//                            break;
+//                        case 2:
+//                            radius = 30;
+//                            break;
+//                        case 3:
+//                            radius = 50;
+//                            break;
+//                        case 4:
+//                            radius= 100;
+//                            break;
+//                    }
+//                    Log.i(LOG_TAG, "radius " + radius);
+//                    SharedPreferences.Editor e = settings.edit();
+//                    e.putInt("spinner", radius);
+//                    e.commit();
+//                    getImageURLs();
+//                }
+//
+//                @Override
+//                public void onNothingSelected(AdapterView<?> parent) {
+//
+//                }
+//            });
+//
+//        }
+//
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+////this updates the users location and then refreshes the images
+//        if(id == R.id.refresh){
+//            refresh = true;
+//            SharedPreferences.Editor e = settings.edit();
+//            e.putString("lat", null);
+//            e.putString("lng", null);
+//            e.commit();
+//            Log.i(LOG_TAG, "lat after refresh should be null" + settings.getString("lat", null));
+//            adapter.clearData();
+//            progressBar.setVisibility(View.VISIBLE);
+//            requestLocationUpdate();
+//
+//        }
+//        //noinspection SimplifiableIfStatement
+//
+//        return super.onOptionsItemSelected(item);
+//    }
+//
+//
+
+
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflator) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getActivity().getMenuInflater().inflate(R.menu.menu_detail, menu);
-        MenuItem mSpinnerItem = menu.findItem(R.id.spinner);
-        setHasOptionsMenu(true);
-
-        //this is for the spinner mile radius.  it defaults to shared preference value
-        //or 5 if nothing has been saved
-        View view = mSpinnerItem.getActionView();
-        if (view instanceof Spinner)
-        {
-            Spinner spinner = (Spinner) view;
-            spinner.setAdapter( ArrayAdapter.createFromResource( getActivity(),
-                    R.array.spinner_data,
-                    android.R.layout.simple_spinner_dropdown_item ) );
-
-            settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-            radius = settings.getInt("spinner", 5);
-            theposition = spinnerHash.get(radius + " Miles");
-            Log.i(LOG_TAG, "spinner hash position" + theposition + " radius:" + radius);
-            spinner.setSelection(theposition);
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    Log.i(LOG_TAG, "spinner pos " + position);
-
-                    switch (position) {
-                        case 0:
-                            radius = 5;
-                            break;
-                        case 1:
-                            radius = 10;
-                            break;
-                        case 2:
-                            radius = 30;
-                            break;
-                        case 3:
-                            radius = 50;
-                            break;
-                        case 4:
-                            radius= 100;
-                            break;
-                    }
-                    Log.i(LOG_TAG, "radius " + radius);
-                    SharedPreferences.Editor e = settings.edit();
-                    e.putInt("spinner", radius);
-                    e.commit();
-                    getImageURLs();
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-
-        }
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-//this updates the users location and then refreshes the images
-        if(id == R.id.refresh){
-            refresh = true;
-            SharedPreferences.Editor e = settings.edit();
-            e.putString("lat", null);
-            e.putString("lng", null);
-            e.commit();
-            Log.i(LOG_TAG, "lat after refresh should be null" + settings.getString("lat", null));
-            adapter.clearData();
-            progressBar.setVisibility(View.VISIBLE);
-            requestLocationUpdate();
-
-        }
-        //noinspection SimplifiableIfStatement
-
-        return super.onOptionsItemSelected(item);
-    }
-    private void showFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
-
-
-    // for taking picture
-    private void clickpic() {
-        // Check Camera
-//        Log.i(LOG_TAG, "click pick");
-        if (getActivity().getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CAMERA)) {
-            // Open default camera
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-
-            // start the image capture Intent
-            startActivityForResult(intent, TAKE_PIC_REQUEST);
-
-        } else {
-            Toast.makeText(getActivity(), "Camera not supported", Toast.LENGTH_LONG).show();
-        }
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_main, container, false);
         return rootView;
     }
@@ -295,7 +277,7 @@ public class MainFragment extends Fragment {
 //            user is signed in and has location, get the images
 //            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 //            setSupportActionBar(toolbar);
-            requestLocationUpdate();
+//            requestLocationUpdate();
             getImageURLs();
         }
 
@@ -342,7 +324,7 @@ public class MainFragment extends Fragment {
     public void getImageURLs(){
 
         removeLocationUpdate();
-//        Log.i(LOG_TAG, "get image urls");
+        Log.i(LOG_TAG, "get image urls");
         getActivity().setProgressBarIndeterminateVisibility(true);
 
 
