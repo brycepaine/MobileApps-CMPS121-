@@ -574,17 +574,17 @@ public class MainActivity extends AppCompatActivity
                             radius = 100;
                             break;
                     }
-                    Log.i(LOG_TAG, "radius " + radius);
+                    Log.i(LOG_TAG, "spinner item selected radius " + radius);
                     SharedPreferences.Editor e = settings.edit();
                     e.putInt("spinner", radius);
                     e.commit();
-                    getFragmentManager().popBackStack();
+
 
                     MainFragment fragment = new MainFragment();
 
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .add(R.id.main_activity_content_frame, fragment)
+                            .replace(R.id.main_activity_content_frame, fragment)
                             .commit();
                 }
 
@@ -623,13 +623,12 @@ public class MainActivity extends AppCompatActivity
 //            //adapter.notifyDataSetChanged();
             //Set the fragment initially
 
-            getFragmentManager().popBackStack();
-
             MainFragment fragment = new MainFragment();
-            android.support.v4.app.FragmentTransaction fragmentTransaction =
-                    getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.fragment_container, fragment);
-            fragmentTransaction.commit();
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_activity_content_frame, fragment)
+                    .commit();
         }
         return super.onOptionsItemSelected(item);
     }

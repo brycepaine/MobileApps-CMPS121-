@@ -191,10 +191,11 @@ public class PreviewActivity extends AppCompatActivity {
             @Override
             public void onResponse(Response<UploadResponse> response) {
                 Log.i(LOG_TAG, "Code is: " + response.code());
-                Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
                 retrofit_upload = true;
                 if(http_upload == true) {
                     progressBar.setVisibility(View.INVISIBLE);
+//                    Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(i);
                 }
@@ -262,7 +263,7 @@ public class PreviewActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid){
             super.onPostExecute(aVoid);
-            Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
             http_upload = true;
             if(retrofit_upload == true) {
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);

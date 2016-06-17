@@ -418,99 +418,99 @@ public class SignupActivity extends AppCompatActivity {
                 image_id = srs.nextString();
 
                 ImageView iv = (ImageView) findViewById(R.id.profile_image);
-//                iv.setImageBitmap(bitmap);
-                try {
-
-                    Display display = getWindowManager().getDefaultDisplay();
-                    Point size = new Point();
-                    display.getSize(size);
-                    int width = size.x;
-                    int height = size.y;
-                    if (bitmap.getWidth() > width || bitmap.getHeight() > height) {
-                        Log.i(LOG_TAG,"scaledown");
-                        bitmap = scaleDown(bitmap, width, true);
-                    }
-
-
-
-//                    ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
-//                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-//                    Log.i(LOG_TAG, "orientation " + orientation);
-//
-//                    switch(orientation) {
-//                        case ExifInterface.ORIENTATION_ROTATE_90:
-//                            bitmap = rotateImage(bitmap, 90);
-//                            break;
-//                        case ExifInterface.ORIENTATION_ROTATE_180:
-//                            bitmap = rotateImage(bitmap, 180);
-//                            break;
-//                        case ExifInterface.ORIENTATION_ROTATE_270:
-//                            bitmap = rotateImage(bitmap, 270);
-//                            break;
-
-                        // etc.
-//                    }
-
-                    iv.setImageBitmap(bitmap);
-
-//                } catch () {
-//                    e.printStackTrace();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-
-
-
-
-
-
-
-        if(requestCode==TAKE_PIC_REQUEST &&resultCode==RESULT_OK&&data!=null) {
-            Log.i(LOG_TAG, "thumbnail " + data.getData());
-            imageUri = data.getData();
-            Log.i(LOG_TAG, "imageURI: " + imageUri);
-
-
-            SecureRandomString srs = new SecureRandomString();
-            image_id = srs.nextString();
-
-            ImageView iv = (ImageView) findViewById(R.id.profile_image);
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                Display display = getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                int width = size.x;
-                int height = size.y;
-                if (bitmap.getWidth() > width || bitmap.getHeight() > height) {
-                    bitmap = scaleDown(bitmap, width, true);
-                }
-                ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
-                int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-                Log.i(LOG_TAG, "orientation " + orientation);
-
-                switch(orientation) {
-                    case ExifInterface.ORIENTATION_ROTATE_90:
-                        bitmap = rotateImage(bitmap, 90);
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_180:
-                        bitmap = rotateImage(bitmap, 180);
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_270:
-                        bitmap = rotateImage(bitmap, 270);
-                        break;
-
-                    // etc.
-                }
                 iv.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
+//                try {
+//
+//                    Display display = getWindowManager().getDefaultDisplay();
+//                    Point size = new Point();
+//                    display.getSize(size);
+//                    int width = size.x;
+//                    int height = size.y;
+//                    if (bitmap.getWidth() > width || bitmap.getHeight() > height) {
+//                        Log.i(LOG_TAG,"scaledown");
+//                        bitmap = scaleDown(bitmap, width, true);
+//                    }
+//
+//
+//
+////                    ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
+////                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+////                    Log.i(LOG_TAG, "orientation " + orientation);
+////
+////                    switch(orientation) {
+////                        case ExifInterface.ORIENTATION_ROTATE_90:
+////                            bitmap = rotateImage(bitmap, 90);
+////                            break;
+////                        case ExifInterface.ORIENTATION_ROTATE_180:
+////                            bitmap = rotateImage(bitmap, 180);
+////                            break;
+////                        case ExifInterface.ORIENTATION_ROTATE_270:
+////                            bitmap = rotateImage(bitmap, 270);
+////                            break;
+//
+//                        // etc.
+////                    }
+//
+//                    iv.setImageBitmap(bitmap);
+//
+////                } catch () {
+////                    e.printStackTrace();
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+
             }
         }
+
+
+
+
+
+
+
+
+//        if(requestCode==TAKE_PIC_REQUEST &&resultCode==RESULT_OK&&data!=null) {
+//            Log.i(LOG_TAG, "thumbnail " + data.getData());
+//            imageUri = data.getData();
+//            Log.i(LOG_TAG, "imageURI: " + imageUri);
+//
+//
+//            SecureRandomString srs = new SecureRandomString();
+//            image_id = srs.nextString();
+//
+//            ImageView iv = (ImageView) findViewById(R.id.profile_image);
+//            try {
+//                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+//                Display display = getWindowManager().getDefaultDisplay();
+//                Point size = new Point();
+//                display.getSize(size);
+//                int width = size.x;
+//                int height = size.y;
+//                if (bitmap.getWidth() > width || bitmap.getHeight() > height) {
+//                    bitmap = scaleDown(bitmap, width, true);
+//                }
+//                ExifInterface ei = new ExifInterface(getRealPathFromURI(imageUri));
+//                int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+//                Log.i(LOG_TAG, "orientation " + orientation);
+//
+//                switch(orientation) {
+//                    case ExifInterface.ORIENTATION_ROTATE_90:
+//                        bitmap = rotateImage(bitmap, 90);
+//                        break;
+//                    case ExifInterface.ORIENTATION_ROTATE_180:
+//                        bitmap = rotateImage(bitmap, 180);
+//                        break;
+//                    case ExifInterface.ORIENTATION_ROTATE_270:
+//                        bitmap = rotateImage(bitmap, 270);
+//                        break;
+//
+//                    // etc.
+//                }
+//                iv.setImageBitmap(bitmap);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     //-------------------------

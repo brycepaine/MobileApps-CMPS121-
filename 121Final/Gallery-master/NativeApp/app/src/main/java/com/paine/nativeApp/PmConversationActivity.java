@@ -75,7 +75,11 @@ public class PmConversationActivity extends AppCompatActivity{
     private Button sendButton;
 
 
-
+    @Override
+    public boolean onSupportNavigateUp(){
+        onBackPressed();
+        return true;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,9 +94,12 @@ public class PmConversationActivity extends AppCompatActivity{
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i(LOG_TAG,"back clicked");
                 onBackPressed();
             }
         });
+
+
 
         Intent i = getIntent();
         user_to = i.getStringExtra("user_name");
@@ -124,6 +131,7 @@ public class PmConversationActivity extends AppCompatActivity{
 
 
         if (id == R.id.home){
+            Log.i(LOG_TAG, "options home");
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("user_name", user_name);
             startActivity(intent);

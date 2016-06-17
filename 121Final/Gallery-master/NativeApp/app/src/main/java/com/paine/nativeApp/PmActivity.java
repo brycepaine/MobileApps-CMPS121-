@@ -112,6 +112,7 @@ public class PmActivity extends AppCompatActivity{
 
 
         if (id == R.id.home){
+            Log.i(LOG_TAG, "options home");
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("user_name", user_name);
             startActivity(intent);
