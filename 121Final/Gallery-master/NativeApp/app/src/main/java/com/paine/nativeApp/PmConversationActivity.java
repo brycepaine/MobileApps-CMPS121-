@@ -361,7 +361,7 @@ public class PmConversationActivity extends AppCompatActivity{
             if (message.getSenderId().equals((user_to))){
                 PmModel userImageModel = new PmModel();
                 userImageModel.setPm(message.getTextBody());
-                userImageModel.setUserName(user_name);
+                userImageModel.setUserName(user_to);
                 userImageModel.setTimeago("Now");
 
 
@@ -447,7 +447,6 @@ public class PmConversationActivity extends AppCompatActivity{
 
         @Override
         public void onMessageSent(MessageClient client, Message message, String recipientId) {
-
             Log.i(LOG_TAG,"onMessageSent");
 
 
